@@ -88,18 +88,26 @@ class TestTutorial01:
         plu = mat.ref()
         assert plu.U.is_echelon
 
+        import warnings
+
         # Case 1: b != 2, a = 0 → no solution (pivot in augmented column)
-        assert plu.U.subs({a: 0}).rref(pivots=False) == Matrix(
-            [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0]], aug_pos=2
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            assert plu.U.subs({a: 0}).rref(pivots=False) == Matrix(
+                [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0]], aug_pos=2
+            )
         # Case 2: b != 2, a != 0 → unique solution
-        assert plu.U.rref(pivots=False) == Matrix(
-            [[1, 0, 0, (2 - b) / a], [0, 1, 0, (b - 2) / a], [0, 0, 1, 1]], aug_pos=2
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            assert plu.U.rref(pivots=False) == Matrix(
+                [[1, 0, 0, (2 - b) / a], [0, 1, 0, (b - 2) / a], [0, 0, 1, 1]], aug_pos=2
+            )
         # Case 3: b = 2, a != 0 → infinitely many solutions, 1 free variable (x3)
-        assert plu.U.subs({b: 2}).rref(pivots=False) == Matrix(
-            [[1, 0, 2 / a, 2 / a], [0, 1, 2 / a, 2 / a], [0, 0, 0, 0]], aug_pos=2
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            assert plu.U.subs({b: 2}).rref(pivots=False) == Matrix(
+                [[1, 0, 2 / a, 2 / a], [0, 1, 2 / a, 2 / a], [0, 0, 0, 0]], aug_pos=2
+            )
         # Case 4: b = 2, a = 0 → infinitely many solutions, 2 free variables (x1, x2)
         assert plu.U.subs({a: 0, b: 2}).rref(pivots=False) == Matrix(
             [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], aug_pos=2
