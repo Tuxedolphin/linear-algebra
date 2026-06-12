@@ -67,10 +67,14 @@ docs/_static/generated/
 # Packaging / Dependency managers
 # ============================================================
 node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
 .npm/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+*.local
 
 # ============================================================
 # IDE — VS Code
