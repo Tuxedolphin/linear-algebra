@@ -19,47 +19,55 @@ export function OperationBrowser() {
     )
   }, [query])
 
+  const grouped = useMemo(() => {
+    const groups = new Map<string, typeof operations>()
+    for (const operation of filtered) {
+      groups.set(operation.group, [...(groups.get(operation.group) ?? []), operation])
+    }
+    return [...groups.entries()]
+  }, [filtered])
+
   return (
-    <aside className="flex h-full min-h-0 w-[212px] shrink-0 flex-col border-r border-rule bg-paper">
-      <div className="border-b border-rule p-4">
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-teal">
-          MA1522
-        </div>
-        <h1 className="mt-2 text-xl font-semibold leading-6 text-ink">Linear algebra</h1>
+    <aside className="flex h-full min-h-0 w-[212px] shrink-0 flex-col border-r border-rule bg-panel">
+      <div className="border-b border-softRule px-2.5 py-2">
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          className="mt-4 h-9 w-full rounded border border-rule bg-chalk px-3 text-sm text-ink placeholder:text-graphite/55"
-          placeholder="Search operation"
+          className="h-8 w-full rounded-md border border-rule bg-surface px-3 text-[13px] text-ink placeholder:text-faint focus:border-accent"
+          placeholder="Search operations...  (/)"
           type="search"
         />
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto py-2">
-        {filtered.map((operation) => {
-          const isActive = operation.id === active
-          return (
-            <button
-              key={operation.id}
-              type="button"
-              onClick={() => setOperation(operation.id)}
-              className={`w-full border-l-4 px-3 py-3 text-left transition-colors ${
-                isActive
-                  ? 'border-teal bg-chalk text-ink'
-                  : 'border-transparent text-graphite hover:bg-chalk/70'
-              }`}
-            >
-              <span className="block text-[11px] font-medium uppercase tracking-[0.16em] text-brass">
-                {operation.group}
-              </span>
-              <span className="mt-1 block text-sm font-semibold leading-5">
-                {operation.label}
-              </span>
-              <span className="mt-1 block text-xs leading-5 text-graphite/75">
-                {operation.summary}
-              </span>
-            </button>
-          )
-        })}
+      <div className="min-h-0 flex-1 overflow-y-auto pb-5 pt-2">
+        {grouped.map(([group, groupOperations]) => (
+          <div key={group} className="pb-2">
+            <div className="px-3 py-2 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-graphite">
+              {group}
+            </div>
+            {groupOperations.map((operation) => {
+              const isActive = operation.id === active
+              return (
+                <button
+                  key={operation.id}
+                  type="button"
+                  onClick={() => setOperation(operation.id)}
+                  aria-selected={isActive}
+                  className={`relative flex h-[31px] w-full items-center gap-2 px-4 text-left text-[12.5px] transition-colors ${
+                    isActive
+                      ? 'bg-accentBg font-medium text-accent'
+                      : 'text-graphite hover:bg-surface2 hover:text-ink'
+                  }`}
+                >
+                  {isActive ? (
+                    <span className="absolute left-0 h-4 w-[3px] rounded-r bg-accent" />
+                  ) : null}
+                  <span className="truncate">{operation.label}</span>
+                  <span className="ml-auto h-1 w-1 rounded-full bg-faint opacity-70" />
+                </button>
+              )
+            })}
+          </div>
+        ))}
       </div>
     </aside>
   )

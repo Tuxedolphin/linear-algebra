@@ -1,4 +1,5 @@
 import type { MatrixMod } from '../lib/types'
+import type { OperationMeta } from '../data/operations'
 import { useCalculatorStore } from '../store/calculator'
 
 type MatrixKey = 'matrixA' | 'matrixB' | 'matrixC' | 'rhs'
@@ -15,7 +16,7 @@ function MatrixField({
   label,
   value,
   onChange,
-  minRows = 6,
+  minRows = 4,
 }: {
   id: MatrixKey
   label: string
@@ -25,9 +26,9 @@ function MatrixField({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-ink">
-        <span className="block">{label}</span>
-        <span className="mt-1 block font-mono text-[11px] font-normal uppercase tracking-[0.16em] text-graphite/65">
+      <span className="mb-2 block text-[13px] font-semibold text-ink">
+        <span className="block uppercase tracking-[0.02em]">{label}</span>
+        <span className="mt-1 block font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-graphite">
           rows separated by semicolons
         </span>
       </span>
@@ -36,14 +37,20 @@ function MatrixField({
         onChange={(event) => onChange(id, event.target.value)}
         rows={minRows}
         spellCheck={false}
-        className="w-full resize-none rounded border border-rule bg-paper px-3 py-3 font-mono text-sm leading-6 text-ink shadow-sm placeholder:text-graphite/45"
+        className="w-full resize-none rounded border border-rule bg-surface px-3 py-3 font-mono text-[13px] leading-6 text-ink placeholder:text-faint focus:border-accent"
         placeholder="[1 2; 3 4]"
       />
     </label>
   )
 }
 
-export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
+export function MatrixInputs({
+  requiredInputs,
+  operation,
+}: {
+  requiredInputs: string[]
+  operation: OperationMeta
+}) {
   const matrixA = useCalculatorStore((state) => state.matrixA)
   const matrixB = useCalculatorStore((state) => state.matrixB)
   const matrixC = useCalculatorStore((state) => state.matrixC)
@@ -56,24 +63,38 @@ export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
   const loadSample = useCalculatorStore((state) => state.loadSample)
 
   return (
-    <section className="rounded border border-rule bg-chalk p-4 shadow-panel">
-      <div className="mb-4 flex items-center justify-between gap-4">
+    <section className="shrink-0 border-b border-softRule px-5 py-[18px]">
+      <div className="mx-auto max-w-[1180px]">
+      <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-ink">Inputs</h2>
-          <p className="mt-1 text-sm leading-6 text-graphite">
-            Accepts bracket, semicolon, or LaTeX matrix notation.
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-graphite">
+            Matrix A
+          </div>
+          <h1 className="mt-2 text-[22px] font-semibold leading-7 text-ink">
+            {operation.label}
+          </h1>
+          <p className="mt-1 max-w-[70ch] text-[13px] leading-6 text-graphite">
+            {operation.summary}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={loadSample}
-          className="h-9 whitespace-nowrap rounded border border-rule bg-paper px-3 text-sm font-semibold text-graphite hover:text-ink"
-        >
-          Load sample
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          {['3x3', '3x4', '4x4', 'n×n'].map((size, index) => (
+            <button
+              key={size}
+              type="button"
+              className={`h-6 rounded border px-2 font-mono text-[10px] ${
+                index === 0
+                  ? 'border-accentRing bg-accentBg text-accent'
+                  : 'border-rule text-graphite hover:bg-surface2 hover:text-ink'
+              }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4">
+      <div className="grid max-w-[760px] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
         <MatrixField id="matrixA" label="Matrix A" value={matrixA} onChange={setMatrix} />
         {requiredInputs.includes('matrixB') ? (
           <MatrixField id="matrixB" label="Matrix B" value={matrixB} onChange={setMatrix} />
@@ -87,7 +108,7 @@ export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
       </div>
 
       {requiredInputs.includes('k') ? (
-        <label className="mt-4 flex max-w-xs items-center justify-between gap-4 text-sm font-semibold text-ink">
+        <label className="mt-4 flex max-w-xs items-center justify-between gap-4 text-[13px] font-semibold text-ink">
           Steps k
           <input
             value={k}
@@ -95,7 +116,7 @@ export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
             type="number"
             min={1}
             max={100}
-            className="h-9 w-24 rounded border border-rule bg-paper px-3 font-mono text-sm"
+            className="h-8 w-24 rounded border border-rule bg-surface px-3 font-mono text-[13px]"
           />
         </label>
       ) : null}
@@ -103,12 +124,12 @@ export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
       {requiredInputs.includes('mods') ? (
         <div className="mt-4 grid grid-cols-3 gap-3">
           {(['m1', 'm2', 'm3'] as const).map((key, index) => (
-            <label key={key} className="text-sm font-semibold text-ink">
+            <label key={key} className="text-[13px] font-semibold text-ink">
               Modifier {index + 1}
               <select
                 value={mods[key]}
                 onChange={(event) => setMod(key, event.target.value as MatrixMod)}
-                className="mt-2 h-9 w-full rounded border border-rule bg-paper px-2 text-sm"
+                className="mt-2 h-8 w-full rounded border border-rule bg-surface px-2 text-[13px]"
               >
                 {modOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -120,6 +141,19 @@ export function MatrixInputs({ requiredInputs }: { requiredInputs: string[] }) {
           ))}
         </div>
       ) : null}
+      <div className="mt-3 flex items-center gap-2 text-[11.5px] text-graphite">
+        <button
+          type="button"
+          onClick={loadSample}
+          className="rounded border border-rule px-3 py-1.5 text-[12px] text-graphite hover:bg-surface2 hover:text-ink"
+        >
+          Random
+        </button>
+        <span>
+          Cells accept exact algebra and constants, e.g. <code className="rounded bg-surface2 px-1 font-mono text-ink">sqrt(2)</code>, <code className="rounded bg-surface2 px-1 font-mono text-ink">pi</code>, <code className="rounded bg-surface2 px-1 font-mono text-ink">5^(1/3)</code>.
+        </span>
+      </div>
+      </div>
     </section>
   )
 }

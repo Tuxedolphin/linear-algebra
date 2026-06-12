@@ -6,33 +6,45 @@ export function StepsPanel() {
   const steps = result?.steps ?? []
 
   return (
-    <section className="rounded border border-rule bg-chalk p-4 shadow-panel">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-base font-semibold text-ink">Working</h2>
+    <section>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-graphite">
+          Working
+        </h2>
         <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-graphite">
           {steps.length} step{steps.length === 1 ? '' : 's'}
         </span>
       </div>
       {steps.length ? (
-        <ol className="grid gap-3">
+        <ol>
           {steps.map((step) => (
-            <li key={step.n} className="rounded border border-rule bg-paper p-4">
-              <div className="flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs text-paper">
-                  {step.n}
+            <li
+              key={step.n}
+              className="border-b border-softRule py-4 last:border-b-0"
+            >
+              <div className="flex items-start gap-4">
+                <span className="w-7 shrink-0 font-mono text-[11px] font-semibold text-accent">
+                  {String(step.n).padStart(2, '0')}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="overflow-x-auto text-sm">
+                  <div className="overflow-x-auto text-[13px] text-graphite">
                     <MathTex latex={step.descriptionLatex} />
                   </div>
+                  <div className="mt-3 flex items-center gap-3">
+                    {step.changedRows?.length ? (
+                      <div className="font-mono text-[10px] font-semibold text-accent">
+                        &gt;R{step.changedRows.map((row) => row + 1).join(', R')}
+                      </div>
+                    ) : null}
+                    {step.matrixLatex ? (
+                      <div className="inline-block overflow-x-auto rounded-md bg-surface2 px-4 py-3">
+                        <MathTex latex={step.matrixLatex} display />
+                      </div>
+                    ) : null}
+                  </div>
                   {step.changedRows?.length ? (
-                    <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-teal">
+                    <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
                       row {step.changedRows.map((row) => row + 1).join(', ')} changed
-                    </div>
-                  ) : null}
-                  {step.matrixLatex ? (
-                    <div className="mt-3 overflow-x-auto rounded bg-chalk px-3 py-4">
-                      <MathTex latex={step.matrixLatex} display />
                     </div>
                   ) : null}
                 </div>
@@ -41,7 +53,7 @@ export function StepsPanel() {
           ))}
         </ol>
       ) : (
-        <div className="rounded border border-dashed border-rule bg-paper px-4 py-10 text-center text-sm text-graphite">
+        <div className="rounded-lg border border-dashed border-rule bg-surface px-4 py-10 text-center text-sm text-graphite">
           Step-by-step workings appear when the operation exposes them.
         </div>
       )}

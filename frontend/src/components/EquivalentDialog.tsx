@@ -6,7 +6,7 @@ import { InlineStatement } from '../lib/math'
 import type { EquivalentResponse } from '../lib/types'
 import { useCalculatorStore } from '../store/calculator'
 
-export function EquivalentDialog() {
+export function EquivalentDialog({ variant = 'button' }: { variant?: 'button' | 'tab' }) {
   const matrixA = useCalculatorStore((state) => state.matrixA)
   const [open, setOpen] = useState(false)
   const [data, setData] = useState<EquivalentResponse | null>(null)
@@ -32,14 +32,18 @@ export function EquivalentDialog() {
       <Dialog.Trigger asChild>
         <button
           type="button"
-          className="h-9 rounded border border-rule bg-paper px-3 text-sm font-semibold text-graphite hover:text-ink"
+          className={
+            variant === 'tab'
+              ? 'rounded-md px-3 py-1.5 text-[13px] font-medium text-graphite hover:bg-surface2 hover:text-ink'
+              : 'h-8 rounded-md border border-rule bg-surface px-3 text-[13px] font-medium text-graphite hover:bg-surface2 hover:text-ink'
+          }
         >
-          Equivalent statements
+          {variant === 'tab' ? 'Equiv. Statements' : 'Equivalent statements'}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/45" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[82vh] w-[min(760px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded border border-rule bg-chalk shadow-panel">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[82vh] w-[min(760px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-rule bg-panel shadow-panel">
           <div className="flex items-start justify-between gap-4 border-b border-rule px-5 py-4">
             <div>
               <Dialog.Title className="text-lg font-semibold text-ink">
@@ -49,18 +53,18 @@ export function EquivalentDialog() {
                 {data?.category ?? 'Computed from Matrix A'}
               </Dialog.Description>
             </div>
-            <Dialog.Close className="h-8 w-8 rounded border border-rule bg-paper text-lg leading-none text-graphite">
-              ×
+            <Dialog.Close className="h-8 w-8 rounded-md border border-rule bg-surface text-lg leading-none text-graphite hover:bg-surface2 hover:text-ink">
+              x
             </Dialog.Close>
           </div>
           <div className="max-h-[66vh] overflow-y-auto px-5 py-4">
             {isLoading ? (
-              <div className="rounded border border-rule bg-paper p-4 text-sm text-graphite">
+              <div className="rounded border border-rule bg-surface p-4 text-sm text-graphite">
                 Loading statements.
               </div>
             ) : null}
             {error ? (
-              <div className="rounded border border-wine/35 bg-wine/10 p-4 text-sm text-wine">
+              <div className="rounded border border-danger/35 bg-dangerBg p-4 text-sm text-danger">
                 {error}
               </div>
             ) : null}
@@ -68,7 +72,7 @@ export function EquivalentDialog() {
               <>
                 <div className="mb-4 grid grid-cols-4 gap-2">
                   {Object.entries(data.properties).map(([key, value]) => (
-                    <div key={key} className="rounded border border-rule bg-paper p-3">
+                    <div key={key} className="rounded border border-rule bg-surface p-3">
                       <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-graphite">
                         {key}
                       </div>
@@ -80,7 +84,7 @@ export function EquivalentDialog() {
                   {data.statements.map((statement, index) => (
                     <li
                       key={`${statement}-${index}`}
-                      className="rounded border border-rule bg-paper px-3 py-3 text-sm leading-6 text-ink"
+                      className="rounded border border-rule bg-surface px-3 py-3 text-sm leading-6 text-ink"
                     >
                       <InlineStatement source={statement} />
                     </li>
