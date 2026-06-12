@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#151515',
-        graphite: '#272421',
-        chalk: '#f6f1e8',
-        paper: '#fffaf0',
-        rule: '#d8ccbc',
-        brass: '#b48a48',
-        teal: '#126a62',
-        wine: '#8a334c',
+        ink: 'var(--color-ink)',
+        graphite: 'var(--color-graphite)',
+        chalk: 'var(--color-chalk)',
+        paper: 'var(--color-paper)',
+        rule: 'var(--color-rule)',
+        brass: 'var(--color-brass)',
+        teal: 'var(--color-teal)',
+        wine: 'var(--color-wine)',
         sage: '#6f8063',
       },
       fontFamily: {

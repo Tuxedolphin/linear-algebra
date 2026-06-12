@@ -4,8 +4,16 @@
 
 :root {
   font-family: Outfit, Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #151515;
-  background: #f6f1e8;
+  color: var(--color-ink);
+  background: var(--color-chalk);
+  --color-ink: #151515;
+  --color-graphite: #272421;
+  --color-chalk: #f6f1e8;
+  --color-paper: #fffaf0;
+  --color-rule: #d8ccbc;
+  --color-brass: #b48a48;
+  --color-teal: #126a62;
+  --color-wine: #8a334c;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,6 +34,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--color-chalk);
 }
 
 #root {
@@ -46,8 +55,23 @@ button:focus-visible {
 }
 
 @layer base {
+  [data-theme='dark'] {
+    --color-ink: #f4efe4;
+    --color-graphite: #c8beb0;
+    --color-chalk: #181817;
+    --color-paper: #22211f;
+    --color-rule: #3d3933;
+    --color-brass: #d0ad68;
+    --color-teal: #63b7ac;
+    --color-wine: #d37891;
+  }
+
   ::selection {
-    color: #fffaf0;
-    background: #8a334c;
+    color: var(--color-paper);
+    background: var(--color-wine);
+  }
+
+  .katex-display {
+    margin: 0;
   }
 }
