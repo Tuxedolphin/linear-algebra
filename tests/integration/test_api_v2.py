@@ -69,3 +69,85 @@ def test_capture_steps_for_ref_returns_structured():
     assert first.n == 1
     assert isinstance(first.descriptionLatex, str) and first.descriptionLatex
     assert any(step.matrixLatex for step in steps)
+
+
+ALL_OPS = {
+    "ref",
+    "rref",
+    "det",
+    "inv",
+    "rank",
+    "lu",
+    "qr",
+    "svd",
+    "gram_schmidt",
+    "eigenvals",
+    "eigenvects",
+    "diagonalize",
+    "orth_diagonalize",
+    "nullspace",
+    "colspace",
+    "orth_complement",
+    "col_constraints",
+    "extend_basis",
+    "solve",
+    "least_squares",
+    "projection",
+    "intersect",
+    "transition",
+    "markov_steady",
+    "markov_kstep",
+    "eval_cases",
+    "find_cases",
+    "chain_multiply",
+}
+
+
+def test_registry_covers_every_operation():
+    from app.operations import OP_REGISTRY
+
+    assert set(OP_REGISTRY.keys()) == ALL_OPS
+
+
+def test_rref_single_matrix_block():
+    from app.operations import run_operation
+    from app.schemas import ComputeRequest
+
+    resp = run_operation(
+        ComputeRequest(operation="rref", matrixA="[1 2; 3 4]", output="exact")
+    )
+
+    assert resp.operation == "rref"
+    assert len(resp.blocks) == 1
+    assert resp.blocks[0].kind == "matrix"
+    assert resp.blocks[0].label == "RREF"
+    assert resp.blocks[0].raw == "[1 0; 0 1]"
+
+
+def test_qr_returns_multiple_matrix_blocks():
+    from app.operations import run_operation
+    from app.schemas import ComputeRequest
+
+    resp = run_operation(
+        ComputeRequest(operation="qr", matrixA="[1 0; 0 1]", output="exact")
+    )
+
+    assert [block.label for block in resp.blocks] == ["Q", "R"]
+    assert all(block.kind == "matrix" for block in resp.blocks)
+
+
+def test_compute_v2_endpoint_returns_structured_response():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.post(
+        "/api/v2/compute",
+        json={"operation": "rref", "matrixA": "[1 2; 3 4]", "output": "exact"},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["operation"] == "rref"
+    assert data["blocks"][0]["kind"] == "matrix"
+    assert data["blocks"][0]["raw"] == "[1 0; 0 1]"

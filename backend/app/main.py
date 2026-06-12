@@ -20,8 +20,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 import sympy as sym
 from ma1522.symbolic import Matrix
+from app.api_v2 import router as api_v2_router
 
 app = FastAPI()
+app.include_router(api_v2_router)
 
 app.mount("/static", StaticFiles(directory="backend/app/static"), name="static")
 
