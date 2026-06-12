@@ -55,3 +55,17 @@ def test_to_bmatrix_is_katex_ready():
     s = to_bmatrix(m)
 
     assert s.startswith("\\begin{bmatrix}") and s.endswith("\\end{bmatrix}")
+
+
+def test_capture_steps_for_ref_returns_structured():
+    from app.parse import parse_input
+    from app.steps import capture_steps
+
+    A = parse_input("[2 1 -1; 4 3 2; -2 0 5]")
+    steps = capture_steps(lambda: A.ref(verbosity=2))
+
+    assert len(steps) >= 1
+    first = steps[0]
+    assert first.n == 1
+    assert isinstance(first.descriptionLatex, str) and first.descriptionLatex
+    assert any(step.matrixLatex for step in steps)
