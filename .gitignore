@@ -74,6 +74,7 @@ frontend/.vite/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+!frontend/pnpm-lock.yaml
 *.local
 
 # ============================================================
