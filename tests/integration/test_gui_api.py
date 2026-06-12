@@ -2,7 +2,7 @@ import json
 import asyncio
 from fastapi.testclient import TestClient
 
-from gui.app import app
+from app.main import app
 
 client = TestClient(app)
 

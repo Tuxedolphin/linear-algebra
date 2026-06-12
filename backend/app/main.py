@@ -23,7 +23,7 @@ from ma1522.symbolic import Matrix
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="src/gui/static"), name="static")
+app.mount("/static", StaticFiles(directory="backend/app/static"), name="static")
 
 # ---------------------------------------------------------------------------
 # Helpers
