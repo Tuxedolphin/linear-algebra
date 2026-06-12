@@ -1,3 +1,5 @@
+import pytest
+
 from app.schemas import ComputeRequest, ComputeResponse, MatrixBlock, Step
 
 
@@ -190,3 +192,52 @@ def test_equivalent_endpoint():
 
     assert response.status_code == 200
     assert "statements" in response.json()
+
+
+OP_FIXTURES = {
+    "ref": {"matrixA": "[2 1 -1; 4 3 2; -2 0 5]"},
+    "rref": {"matrixA": "[1 2; 3 4]"},
+    "det": {"matrixA": "[1 2; 3 4]"},
+    "inv": {"matrixA": "[1 2; 3 5]"},
+    "rank": {"matrixA": "[1 2; 2 4]"},
+    "lu": {"matrixA": "[2 1; 4 3]"},
+    "qr": {"matrixA": "[1 1; 1 0; 0 1]"},
+    "svd": {"matrixA": "[1 0; 0 2]"},
+    "gram_schmidt": {"matrixA": "[1 1; 1 0; 0 1]"},
+    "eigenvals": {"matrixA": "[2 0; 0 3]"},
+    "eigenvects": {"matrixA": "[2 0; 0 3]"},
+    "diagonalize": {"matrixA": "[2 0; 0 3]"},
+    "orth_diagonalize": {"matrixA": "[2 1; 1 2]"},
+    "nullspace": {"matrixA": "[1 2; 2 4]"},
+    "colspace": {"matrixA": "[1 2; 2 4]"},
+    "orth_complement": {"matrixA": "[1 0; 0 1; 0 0]"},
+    "col_constraints": {"matrixA": "[1 2; 2 4]"},
+    "extend_basis": {"matrixA": "[1; 0; 0]"},
+    "solve": {"matrixA": "[1 1; 0 1]", "rhs": "[2; 1]"},
+    "least_squares": {"matrixA": "[1 1; 1 0; 0 1]", "rhs": "[1; 2; 3]"},
+    "projection": {"matrixA": "[1 1; 1 0; 0 1]", "rhs": "[1; 2; 3]"},
+    "intersect": {"matrixA": "[1 0; 0 1; 0 0]", "matrixB": "[1 0; 0 0; 0 1]"},
+    "transition": {"matrixA": "[1 0; 0 1]", "matrixB": "[1 1; 0 1]"},
+    "markov_steady": {"matrixA": "[1/2 1/2; 1/2 1/2]"},
+    "markov_kstep": {"matrixA": "[1/2 1/2; 1/2 1/2]", "rhs": "[1; 0]", "k": 3},
+    "eval_cases": {"matrixA": "[1 a; 0 1]"},
+    "find_cases": {"matrixA": "[1 a; 0 1]"},
+    "chain_multiply": {
+        "matrixA": "[1 2; 3 4]",
+        "matrixB": "[1 0; 0 1]",
+        "mods": {"m1": "none", "m2": "none"},
+    },
+}
+
+
+@pytest.mark.parametrize("op", sorted(OP_FIXTURES))
+def test_every_operation_returns_200_with_blocks(op):
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    payload = {"operation": op, "output": "exact", **OP_FIXTURES[op]}
+    response = client.post("/api/v2/compute", json=payload)
+
+    assert response.status_code == 200, response.text
+    assert len(response.json()["blocks"]) >= 1
