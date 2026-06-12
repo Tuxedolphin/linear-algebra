@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MA1522 Studio — v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]})"></script>
+<style>
+/* ══════════════════════════════════════════
+   TOKENS — only these change between modes
+   ══════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg:           #F3EEE5;
+  --panel:        #FDFAF4;
+  --surface:      #FFFFFF;
+  --surface-2:    #EDE8DE;
+  --ink:          #1E1A14;
+  --ink-2:        #7A6D5D;
+  --ink-3:        #B8AFA0;
+  --border:       rgba(30,26,20,.08);
+  --border-2:     rgba(30,26,20,.14);
+  --accent:       #96501C;
+  --accent-bg:    rgba(150,80,28,.08);
+  --accent-ring:  rgba(150,80,28,.18);
+  --ok:           #2A6640;
+  --ok-bg:        rgba(42,102,64,.09);
+  --shadow:       0 1px 3px rgba(30,26,20,.06), 0 6px 20px rgba(30,26,20,.05);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg:           #0D0D0C;
+  --panel:        #131312;
+  --surface:      #1A1A19;
+  --surface-2:    #222220;
+  --ink:          #E8E8E5;
+  --ink-2:        #7A7A75;
+  --ink-3:        #3E3E3B;
+  --border:       rgba(255,255,255,.06);
+  --border-2:     rgba(255,255,255,.10);
+  --accent:       #C07B3E;
+  --accent-bg:    rgba(192,123,62,.08);
+  --accent-ring:  rgba(192,123,62,.20);
+  --ok:           #3A8F58;
+  --ok-bg:        rgba(58,143,88,.08);
+  --shadow:       none;
+  color-scheme: dark;
+}
+
+/* ══════════════════════════════════════════
+   RESET
+   ══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ══════════════════════════════════════════
+   SHELL
+   ══════════════════════════════════════════ */
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ─── TOPBAR ─── */
+.topbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.logo-block {
+  width: 212px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  height: 100%;
+  border-right: 1px solid var(--border-2);
+}
+.logo-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  color: #fff;
+  flex-shrink: 0;
+}
+.logo-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+.logo-tag {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 1px 5px;
+  border: 1px solid var(--accent-ring);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 12px;
+  flex: 1;
+}
+.t-tab {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.t-tab:hover { background: var(--surface-2); color: var(--ink); }
+.t-tab.active { background: var(--accent-bg); color: var(--accent); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+}
+.ctrl {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  font-size: 11px;
+  transition: background .1s, color .1s;
+}
+.ctrl:hover { background: var(--surface-2); color: var(--ink); }
+.ctrl.theme { font-size: 14px; }
+.ctrl.dec { font-family: 'JetBrains Mono', monospace; font-size: 10px; width: auto; padding: 0 8px; letter-spacing: -.2px; }
+
+/* ─── BODY ─── */
+.body {
+  display: grid;
+  grid-template-columns: 212px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ══════════════════════════════════════════
+   LEFT — OP BROWSER
+   ══════════════════════════════════════════ */
+.op-browser {
+  background: var(--panel);
+  border-right: 1px solid var(--border-2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.search-wrap {
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  padding: 0 10px;
+  transition: border-color .12s, box-shadow .12s;
+}
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.search-box svg { flex-shrink: 0; color: var(--ink-3); }
+.search-input {
+  flex: 1; border: none; background: transparent;
+  color: var(--ink); font-family: 'Outfit', sans-serif;
+  font-size: 12.5px; outline: none;
+}
+.search-input::placeholder { color: var(--ink-3); }
+.search-clear {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-3); font-size: 10px; line-height: 1;
+  display: none; padding: 2px; transition: color .1s;
+}
+.search-clear:hover { color: var(--ink); }
+
+.op-list {
+  flex: 1; overflow-y: auto; padding: 4px 0 20px;
+  scrollbar-width: thin; scrollbar-color: var(--border-2) transparent;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
+
+.op-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 12px 12px 3px;
+}
+.op-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 12px 5px 18px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background .08s, color .08s;
+}
+.op-item:hover { background: var(--surface-2); color: var(--ink); }
+.op-item.active {
+  color: var(--accent);
+  font-weight: 500;
+  background: var(--accent-bg);
+}
+.op-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px; height: 16px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.steps-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.op-item.active .steps-dot { background: var(--accent); opacity: .6; }
+
+/* ══════════════════════════════════════════
+   RIGHT — WORKSPACE
+   ══════════════════════════════════════════ */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ─── MATRIX SECTION ─── */
+.matrix-section {
+  padding: 18px 20px 14px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+.matrix-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.matrix-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.size-btns { display: flex; gap: 3px; margin-left: auto; }
+.size-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background .1s, color .1s, border-color .1s;
+}
+.size-btn.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent-ring);
+}
+
+/* matrix display */
+.matrix-display { display: flex; align-items: center; gap: 6px; }
+.bracket {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 52px;
+  font-weight: 200;
+  color: var(--ink-3);
+  line-height: 1;
+  margin-top: -2px;
+  user-select: none;
+}
+.m-grid {
+  display: grid;
+  gap: 4px;
+}
+.m-cell {
+  width: 44px; height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: center;
+  outline: none;
+  transition: border-color .12s, box-shadow .12s, background .12s;
+  -moz-appearance: textfield;
+}
+.m-cell::-webkit-inner-spin-button,
+.m-cell::-webkit-outer-spin-button { -webkit-appearance: none; }
+.m-cell:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 2.5px var(--accent-ring);
+  z-index: 1;
+  position: relative;
+}
+
+.matrix-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.btn-xs {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.btn-xs:hover { background: var(--surface-2); color: var(--ink); }
+.text-mode-toggle {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color .1s;
+}
+.text-mode-toggle:hover { color: var(--accent); }
+
+/* ─── COMPUTE STRIP ─── */
+.compute-strip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+}
+.btn-compute {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  letter-spacing: -.1px;
+  transition: opacity .12s, transform .07s;
+}
+.btn-compute:active { transform: scale(.97); }
+.btn-compute:hover { opacity: .88; }
+.undoredo {
+  display: flex;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.undoredo-btn {
+  width: 32px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  border: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.undoredo-btn:hover { background: var(--surface-2); color: var(--ink); }
+.undoredo-btn + .undoredo-btn { border-left: 1px solid var(--border-2); }
+.strip-spacer { flex: 1; }
+.strip-status {
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.strip-status.ready { background: var(--surface-2); color: var(--ink-3); }
+.strip-status.done { background: var(--ok-bg); color: var(--ok); }
+
+/* ─── RESULTS SCROLL ─── */
+.results-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+/* section header */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.copy-btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color .1s, border-color .1s;
+}
+.copy-btn:hover { color: var(--accent); border-color: var(--accent-ring); }
+
+/* result block — no left bar, clean card */
+.result-block {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 9px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.result-mat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 2.1;
+  color: var(--ink);
+  white-space: pre;
+}
+.result-meta {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.meta-item {
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.meta-item b {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* use-as-input pipe button */
+.use-as-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color .1s, border-color .1s, background .1s;
+}
+.use-as-input:hover {
+  color: var(--accent);
+  border-color: var(--accent-ring);
+  background: var(--accent-bg);
+}
+.use-as-input svg { flex-shrink: 0; }
+
+/* equiv link */
+.equiv-link {
+  font-size: 12px;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color .1s;
+}
+.equiv-link:hover { color: var(--accent); }
+
+/* ─── STEPS ─── */
+.steps-section { display: flex; flex-direction: column; gap: 0; }
+.steps-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+}
+
+.step {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.step:last-child { border-bottom: none; }
+
+.step-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.step-n {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 20px;
+  flex-shrink: 0;
+}
+.step-desc {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.step-desc code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--ink);
+}
+
+/* intermediate matrix — shown after each step */
+.step-matrix {
+  margin-left: 28px;
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.9;
+  color: var(--ink);
+  white-space: pre;
+  display: inline-block;
+}
+/* highlight the row that just changed */
+.step-matrix .changed {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════
+   TRANSITIONS — only fast interactive ones
+   ══════════════════════════════════════════ */
+body, .app, .topbar, .logo-block, .op-browser, .workspace,
+.matrix-section, .compute-strip, .results-scroll,
+.result-block, .step, .step-matrix, .ok-notice {
+  transition: background-color .18s, border-color .18s, color .18s;
+}
+.m-cell, .btn-compute, .t-tab, .op-item, .ctrl, .btn-xs,
+.undoredo-btn, .size-btn, .search-box, .copy-btn {
+  transition: background .09s, color .09s, border-color .09s,
+              box-shadow .09s, opacity .09s, transform .07s;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <div class="logo-block">
+      <div class="logo-mark">∑</div>
+      <span class="logo-name">MA1522</span>
+      <span class="logo-tag">Studio</span>
+    </div>
+
+    <nav class="topbar-nav">
+      <button class="t-tab active">Compute</button>
+      <button class="t-tab">History</button>
+      <button class="t-tab">Equiv. Statements</button>
+    </nav>
+
+    <div class="topbar-right">
+      <button class="ctrl dec" title="Toggle exact / decimal">1/3</button>
+      <button class="ctrl" title="Settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </button>
+      <button class="ctrl theme" id="themeBtn" title="Toggle theme">☀</button>
+    </div>
+  </header>
+
+  <!-- ══ BODY ══ -->
+  <div class="body">
+
+    <!-- ─ LEFT: OP BROWSER ─ -->
+    <nav class="op-browser">
+      <div class="search-wrap">
+        <div class="search-box" id="searchBox">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input class="search-input" id="searchInput" type="text"
+            placeholder="Search operations…" autocomplete="off" spellcheck="false">
+          <button class="search-clear" id="searchClear" aria-label="Clear">✕</button>
+        </div>
+      </div>
+
+      <div class="op-list" id="opList">
+
+        <div class="op-group-label">Row Reduction</div>
+        <div class="op-item active" data-op="ref" data-label="REF">REF <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="rref" data-label="RREF">RREF</div>
+
+        <div class="op-group-label">Properties</div>
+        <div class="op-item" data-op="det" data-label="Determinant">Determinant</div>
+        <div class="op-item" data-op="inv" data-label="Inverse">Inverse <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="rank" data-label="Rank &amp; Nullity">Rank &amp; Nullity</div>
+
+        <div class="op-group-label">Factorizations</div>
+        <div class="op-item" data-op="lu" data-label="LU / PLU">LU / PLU <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="qr" data-label="QR">QR <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="svd" data-label="SVD">SVD</div>
+        <div class="op-item" data-op="gram_schmidt" data-label="Gram–Schmidt">Gram–Schmidt <span class="steps-dot"></span></div>
+
+        <div class="op-group-label">Eigen Analysis</div>
+        <div class="op-item" data-op="eigenvals" data-label="Eigenvalues">Eigenvalues</div>
+        <div class="op-item" data-op="eigenvects" data-label="Eigenvectors">Eigenvectors</div>
+        <div class="op-item" data-op="diagonalize" data-label="Diagonalize">Diagonalize <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="orth_diagonalize" data-label="Orth. Diagonalize">Orth. Diagonalize <span class="steps-dot"></span></div>
+
+        <div class="op-group-label">Vector Spaces</div>
+        <div class="op-item" data-op="nullspace" data-label="Null Space">Null Space</div>
+        <div class="op-item" data-op="colspace" data-label="Column Space">Column Space</div>
+        <div class="op-item" data-op="orth_complement" data-label="Orth. Complement">Orth. Complement <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="col_constraints" data-label="Col. Constraints">Col. Constraints <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="extend_basis" data-label="Extend Basis">Extend Basis <span class="steps-dot"></span></div>
+
+        <div class="op-group-label">Linear Systems</div>
+        <div class="op-item" data-op="solve" data-label="Solve Ax = b">Solve Ax = b</div>
+        <div class="op-item" data-op="least_squares" data-label="Least Squares">Least Squares <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="projection" data-label="Projection onto Col(A)">Projection onto Col(A) <span class="steps-dot"></span></div>
+
+        <div class="op-group-label">Subspaces</div>
+        <div class="op-item" data-op="intersect" data-label="Intersect">Intersect <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="transition" data-label="Transition Matrix">Transition Matrix <span class="steps-dot"></span></div>
+
+        <div class="op-group-label">Markov</div>
+        <div class="op-item" data-op="markov_steady" data-label="Steady State">Steady State</div>
+        <div class="op-item" data-op="markov_kstep" data-label="k-Step Distribution">k-Step Distribution</div>
+
+        <div class="op-group-label">Symbolic</div>
+        <div class="op-item" data-op="eval_cases" data-label="Evaluate Cases">Evaluate Cases <span class="steps-dot"></span></div>
+        <div class="op-item" data-op="find_cases" data-label="Find Cases">Find Cases</div>
+
+        <div class="op-group-label">Arithmetic</div>
+        <div class="op-item" data-op="chain_multiply" data-label="Chain Multiply">Chain Multiply</div>
+
+      </div>
+    </nav>
+
+    <!-- ─ RIGHT: WORKSPACE ─ -->
+    <div class="workspace">
+
+      <!-- Matrix input -->
+      <div class="matrix-section">
+        <div class="matrix-header">
+          <span class="matrix-title">Matrix A</span>
+          <div class="size-btns">
+            <button class="size-btn active">3×3</button>
+            <button class="size-btn">3×4</button>
+            <button class="size-btn">4×4</button>
+            <button class="size-btn">n×m</button>
+          </div>
+        </div>
+
+        <div class="matrix-display">
+          <span class="bracket">[</span>
+          <div class="m-grid" style="grid-template-columns: repeat(3, auto)">
+            <input class="m-cell" type="number" value="2">
+            <input class="m-cell" type="number" value="1">
+            <input class="m-cell" type="number" value="-1">
+            <input class="m-cell" type="number" value="4">
+            <input class="m-cell" type="number" value="3">
+            <input class="m-cell" type="number" value="2">
+            <input class="m-cell" type="number" value="-2">
+            <input class="m-cell" type="number" value="0">
+            <input class="m-cell" type="number" value="5">
+          </div>
+          <span class="bracket">]</span>
+        </div>
+
+        <div class="matrix-controls">
+          <button class="btn-xs">Clear</button>
+          <button class="btn-xs">Random</button>
+          <button class="text-mode-toggle">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M1 3.5h10M1 6h7M1 8.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Text / LaTeX
+          </button>
+        </div>
+      </div>
+
+      <!-- Compute strip -->
+      <div class="compute-strip">
+        <button class="btn-compute" id="computeBtn" title="Compute (⌘↵)">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 1.5l6 3.5-6 3.5V1.5z" fill="currentColor"/>
+          </svg>
+          Compute
+        </button>
+        <div class="undoredo">
+          <button class="undoredo-btn" title="Undo (⌘Z)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M2 5H8.5a3 3 0 010 6H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 5L4.5 2.5M2 5l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="undoredo-btn" title="Redo (⌘⇧Z)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M11 5H4.5a3 3 0 000 6H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11 5L8.5 2.5M11 5l-2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="strip-spacer"></div>
+        <span class="strip-status done">Done ✓</span>
+      </div>
+
+      <!-- Results -->
+      <div class="results-scroll">
+
+        <div>
+          <div class="section-head" style="margin-bottom:10px">
+            <span class="section-title">Result — REF</span>
+            <div style="display:flex;gap:6px">
+              <button class="copy-btn">Copy LaTeX</button>
+              <button class="copy-btn">Copy decimal</button>
+            </div>
+          </div>
+
+          <div class="result-block">
+            <div class="result-mat">⎡  2   1  −1 ⎤
+⎢  0   1   4 ⎥
+⎣  0   0   8 ⎦</div>
+            <div class="result-meta">
+              <span class="meta-item">rank <b>3</b></span>
+              <span class="meta-item">nullity <b>0</b></span>
+              <span class="meta-item">det <b>16</b></span>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button class="use-as-input" id="useAsInputBtn" title="Load this result into Matrix A and continue computing">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M2 6.5h9M8 3l3 3.5-3 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Use as Matrix A
+            </button>
+            <button class="equiv-link" title="See equivalent statements for this matrix">
+              View Equiv. Statements
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                <path d="M2 5.5h7M6 2.5l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="steps-section">
+          <div class="steps-title">Working</div>
+
+          <div class="step">
+            <div class="step-header">
+              <span class="step-n">01</span>
+              <span class="step-desc"><code>R₂ ← R₂ − 2R₁</code> — eliminate leading entry of row 2</span>
+            </div>
+            <div class="step-matrix"><span> 2   1  −1</span>
+<span class="changed"> 0   1   4</span>
+<span>−2   0   5</span></div>
+          </div>
+
+          <div class="step">
+            <div class="step-header">
+              <span class="step-n">02</span>
+              <span class="step-desc"><code>R₃ ← R₃ + R₁</code> — clear column 1 in row 3</span>
+            </div>
+            <div class="step-matrix"><span> 2   1  −1</span>
+<span> 0   1   4</span>
+<span class="changed"> 0   1   4</span></div>
+          </div>
+
+          <div class="step">
+            <div class="step-header">
+              <span class="step-n">03</span>
+              <span class="step-desc"><code>R₃ ← R₃ − 2R₂</code> — achieve upper triangular form</span>
+            </div>
+            <div class="step-matrix"><span> 2   1  −1</span>
+<span> 0   1   4</span>
+<span class="changed"> 0   0   8</span></div>
+          </div>
+
+        </div>
+      </div><!-- /results-scroll -->
+
+    </div><!-- /workspace -->
+  </div><!-- /body -->
+</div><!-- /app -->
+
+<script>
+/* ── THEME ── */
+(function () {
+  const KEY = 'ma1522-theme';
+  const btn = document.getElementById('themeBtn');
+  const html = document.documentElement;
+  function apply(t) {
+    html.setAttribute('data-theme', t);
+    btn.textContent = t === 'light' ? '☽' : '☀';
+    btn.title = t === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+  }
+  const stored = localStorage.getItem(KEY);
+  const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  apply(stored || sys);
+  btn.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+  });
+})();
+
+/* ── OP SELECTION ── */
+document.querySelectorAll('.op-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.op-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+/* ── SEARCH ── */
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  searchClear.style.display = q ? 'block' : 'none';
+  const items = document.querySelectorAll('.op-item');
+  const labels = document.querySelectorAll('.op-group-label');
+  items.forEach(item => {
+    item.style.display = (!q || item.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+  labels.forEach(label => {
+    let sib = label.nextElementSibling;
+    let vis = false;
+    while (sib && !sib.classList.contains('op-group-label')) {
+      if (sib.style.display !== 'none') vis = true;
+      sib = sib.nextElementSibling;
+    }
+    label.style.display = vis ? '' : 'none';
+  });
+});
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
+});
+
+/* ── SIZE BTNS ── */
+document.querySelectorAll('.size-btn').forEach(b =>
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.size-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  })
+);
+
+/* ── NAV TABS ── */
+document.querySelectorAll('.t-tab').forEach(t =>
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.t-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  })
+);
+
+/* ── USE AS MATRIX A ── */
+document.getElementById('useAsInputBtn').addEventListener('click', function () {
+  // Demo: load the REF result [2,1,-1 / 0,1,4 / 0,0,8] into the matrix cells
+  const vals = [2, 1, -1, 0, 1, 4, 0, 0, 8];
+  const cells = document.querySelectorAll('.m-cell');
+  cells.forEach((c, i) => { if (vals[i] !== undefined) c.value = vals[i]; });
+  // Flash to confirm
+  this.textContent = '✓ Loaded into Matrix A';
+  this.style.color = 'var(--ok)';
+  this.style.borderColor = 'var(--ok)';
+  setTimeout(() => {
+    this.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M8 3l3 3.5-3 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Use as Matrix A`;
+    this.style.color = '';
+    this.style.borderColor = '';
+  }, 1800);
+  // Scroll back up to matrix
+  document.querySelector('.matrix-section').scrollIntoView({ behavior: 'smooth' });
+});
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('computeBtn').click();
+  }
+  if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+    e.preventDefault();
+    searchInput.focus();
+  }
+});
+</script>
+</body>
+</html>

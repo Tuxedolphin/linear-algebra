@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MA1522 Studio — Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e12;
+  --surface: #16161d;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8e8ee;
+  --muted: #7070a0;
+  --dim: #3a3a5a;
+  --sans: 'Bricolage Grotesque', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: dark; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  padding: 48px 24px 64px;
+  background-image:
+    radial-gradient(ellipse 50% 30% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 55%);
+}
+
+.page-head {
+  max-width: 760px; margin: 0 auto 56px;
+  text-align: center;
+}
+.kicker {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px;
+  font-family: var(--mono);
+}
+h1 {
+  font-size: 34px; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+  margin-bottom: 14px;
+}
+.sub {
+  font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 520px; margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex; flex-direction: column;
+  transition: border-color 160ms, transform 160ms;
+}
+.card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+}
+.card:active { transform: translateY(0) scale(0.99); }
+
+/* Preview thumbnail — a mini version of each direction */
+.preview {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+}
+.preview-inner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+}
+
+/* Direction 1 — dark */
+.p1 { background: #080810; }
+.p1 .pre-left {
+  background: #0f0f1a;
+  border-right: 1px solid rgba(120,120,200,0.12);
+  padding: 10px 8px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.p1 .pre-cell {
+  height: 14px; border-radius: 2px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.25);
+}
+.p1 .pre-btn {
+  height: 14px; border-radius: 2px;
+  background: #6366f1;
+  margin-top: 4px;
+}
+.p1 .pre-tag {
+  height: 9px; border-radius: 2px;
+  background: rgba(255,255,255,0.06);
+}
+.p1 .pre-right {
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.p1 .pre-result {
+  background: #0f0f1a;
+  border: 1px solid rgba(120,120,200,0.12);
+  border-radius: 4px;
+  padding: 10px;
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.p1 .pre-math {
+  font-family: var(--mono);
+  font-size: 11px; color: #e8e8ff;
+  letter-spacing: 0.02em;
+}
+
+/* Direction 2 — warm cream */
+.p2 { background: #f4f0e6; }
+.p2 .pre-left {
+  background: #fffffe;
+  border-right: 1px solid rgba(28,26,20,0.1);
+  padding: 10px 8px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.p2 .pre-cell {
+  height: 14px; border-radius: 2px;
+  background: #fffffe;
+  border: 1px solid rgba(28,26,20,0.15);
+}
+.p2 .pre-btn {
+  height: 14px; border-radius: 2px;
+  background: #1c1a14;
+  margin-top: 4px;
+}
+.p2 .pre-tag {
+  height: 9px; border-radius: 2px;
+  background: rgba(28,26,20,0.07);
+}
+.p2 .pre-right {
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.p2 .pre-result {
+  background: #fffffe;
+  border: 1px solid rgba(28,26,20,0.14);
+  border-radius: 4px;
+  padding: 10px;
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 3px rgba(28,26,20,0.06), 0 6px 20px rgba(28,26,20,0.04);
+}
+.p2 .pre-math {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 12px; color: #1c1a14;
+}
+
+/* Direction 3 — flat white */
+.p3 { background: #f8f8f7; }
+.p3 .pre-left {
+  background: #ffffff;
+  border-right: 1px solid #e6e6e3;
+  padding: 10px 8px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.p3 .pre-cell {
+  height: 14px; border-radius: 2px;
+  background: #f8f8f7;
+  border: 1px solid #e6e6e3;
+}
+.p3 .pre-btn {
+  height: 14px; border-radius: 2px;
+  background: #0f0f0e;
+  margin-top: 4px;
+}
+.p3 .pre-tag {
+  height: 9px; border-radius: 0;
+  background: #e6e6e3;
+}
+.p3 .pre-right {
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.p3 .pre-result {
+  background: #ffffff;
+  border: 1px solid #e6e6e3;
+  border-radius: 3px;
+  padding: 10px;
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.p3 .pre-math {
+  font-family: var(--mono);
+  font-size: 11px; color: #0f0f0e;
+}
+
+/* Card body */
+.card-body {
+  padding: 18px 20px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.card-num {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim);
+  font-family: var(--mono);
+}
+.card-title {
+  font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--text);
+}
+.card-desc {
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+}
+.card-tags {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin-top: 4px;
+}
+.tag {
+  font-size: 10.5px; font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.card-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: auto; padding-top: 10px;
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+.card-arrow { transition: transform 140ms; }
+.card:hover .card-arrow { transform: translateX(3px); }
+
+.footer-note {
+  max-width: 760px; margin: 48px auto 0;
+  text-align: center;
+  font-size: 12.5px; color: var(--muted); line-height: 1.7;
+}
+.footer-note strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="kicker">MA1522 Linear Algebra Studio</div>
+  <h1>Three Design Directions</h1>
+  <p class="sub">Each mockup shows the full calculator layout with live KaTeX math. Open each to explore, then pick a direction to commit to.</p>
+</div>
+
+<div class="grid">
+
+  <!-- Direction 1 -->
+  <a class="card" href="direction-1-refined-technical.html">
+    <div class="preview p1">
+      <div class="preview-inner">
+        <div class="pre-left">
+          <div class="pre-tag"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-btn"></div>
+          <div class="pre-tag" style="margin-top:6px"></div>
+          <div class="pre-tag"></div>
+          <div class="pre-tag"></div>
+          <div class="pre-tag"></div>
+        </div>
+        <div class="pre-right">
+          <div style="height:24px;background:#161624;border-radius:4px;border:1px solid rgba(120,120,200,0.12)"></div>
+          <div class="pre-result">
+            <span class="pre-math">[ 1  0 ]<br>[ 0  1 ]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-num">Direction 01</span>
+      <span class="card-title">Refined Technical</span>
+      <p class="card-desc">Dark precision environment. Monospace-forward, indigo accent, grid texture. Feels like a serious engineering tool — the kind you're proud to have open during an exam.</p>
+      <div class="card-tags">
+        <span class="tag">dark mode</span>
+        <span class="tag">monospace</span>
+        <span class="tag">space mono</span>
+        <span class="tag">indigo</span>
+      </div>
+      <span class="card-link">Open mockup <span class="card-arrow">→</span></span>
+    </div>
+  </a>
+
+  <!-- Direction 2 -->
+  <a class="card" href="direction-2-academic-editorial.html">
+    <div class="preview p2">
+      <div class="preview-inner">
+        <div class="pre-left">
+          <div class="pre-tag"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-btn" style="background:#1d4ed8"></div>
+          <div class="pre-tag" style="margin-top:6px"></div>
+          <div class="pre-tag" style="background:rgba(29,78,216,0.12);border-radius:2px;height:9px"></div>
+          <div class="pre-tag" style="background:rgba(124,58,237,0.12);border-radius:2px;height:9px"></div>
+          <div class="pre-tag" style="background:rgba(13,148,136,0.12);border-radius:2px;height:9px"></div>
+        </div>
+        <div class="pre-right">
+          <div style="height:24px;background:#f4f0e6;border-radius:4px;border:1px solid rgba(28,26,20,0.12)"></div>
+          <div class="pre-result">
+            <span class="pre-math">rref(A) = I</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-num">Direction 02</span>
+      <span class="card-title">Academic Editorial</span>
+      <p class="card-desc">Warm cream surfaces, Lora serif display, scholarly blue accent with color-coded operation groups. Reads like a beautifully typeset course companion.</p>
+      <div class="card-tags">
+        <span class="tag">light mode</span>
+        <span class="tag">lora serif</span>
+        <span class="tag">dm sans</span>
+        <span class="tag">warm cream</span>
+      </div>
+      <span class="card-link">Open mockup <span class="card-arrow">→</span></span>
+    </div>
+  </a>
+
+  <!-- Direction 3 -->
+  <a class="card" href="direction-3-focused-minimalist.html">
+    <div class="preview p3">
+      <div class="preview-inner">
+        <div class="pre-left">
+          <div class="pre-tag"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-cell"></div>
+          <div class="pre-btn"></div>
+          <div style="height:1px;background:#e6e6e3;margin-top:6px"></div>
+          <div class="pre-tag" style="margin-top:5px"></div>
+          <div style="height:1px;background:#e6e6e3;margin-top:4px"></div>
+          <div class="pre-tag" style="margin-top:5px"></div>
+        </div>
+        <div class="pre-right">
+          <div style="height:24px;background:#ffffff;border-radius:3px;border:1px solid #e6e6e3"></div>
+          <div class="pre-result">
+            <span class="pre-math">[ 1  0 ]<br>[ 0  1 ]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="card-num">Direction 03</span>
+      <span class="card-title">Focused Minimalist</span>
+      <p class="card-desc">Near-monochrome, flat surfaces, dividers over cards. No ornament, no color. Maximum cognitive focus — designed for exam conditions where distraction costs marks.</p>
+      <div class="card-tags">
+        <span class="tag">light mode</span>
+        <span class="tag">bricolage grotesque</span>
+        <span class="tag">monochrome</span>
+        <span class="tag">exam-first</span>
+      </div>
+      <span class="card-link">Open mockup <span class="card-arrow">→</span></span>
+    </div>
+  </a>
+
+</div>
+
+<p class="footer-note">
+  Each mockup renders <strong>live KaTeX math</strong> and has working matrix input cells.<br>
+  The exam-context constraint (speed, low distraction, scannable results) is baked into all three — they differ in aesthetic character, not functionality.
+</p>
+
+</body>
+</html>
