@@ -109,6 +109,9 @@ out/
 # Claude Code / AI tooling
 # ============================================================
 .claude/
+.superpowers/
+docs/superpowers/
+HANDOFF.md
 
 # ============================================================
 # macOS

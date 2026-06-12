@@ -6,21 +6,27 @@ import { InlineStatement } from '../lib/math'
 import type { EquivalentResponse } from '../lib/types'
 import { useCalculatorStore } from '../store/calculator'
 
-export function EquivalentDialog({ variant = 'button' }: { variant?: 'button' | 'tab' }) {
+export function EquivalentDialog() {
   const matrixA = useCalculatorStore((state) => state.matrixA)
   const [open, setOpen] = useState(false)
   const [data, setData] = useState<EquivalentResponse | null>(null)
+  const [loadedFor, setLoadedFor] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setLoading] = useState(false)
 
   async function loadEquivalent(nextOpen: boolean) {
     setOpen(nextOpen)
-    if (!nextOpen || data || isLoading) return
+    // Refetch whenever the dialog opens for a matrix we haven't loaded yet,
+    // so the statements never go stale after Matrix A changes.
+    if (!nextOpen || isLoading || loadedFor === matrixA) return
     setLoading(true)
     setError(null)
     try {
-      setData(await equivalent(matrixA))
+      const response = await equivalent(matrixA)
+      setData(response)
+      setLoadedFor(matrixA)
     } catch (err) {
+      setData(null)
       setError(err instanceof Error ? err.message : 'Unable to load equivalent statements.')
     } finally {
       setLoading(false)
@@ -32,13 +38,9 @@ export function EquivalentDialog({ variant = 'button' }: { variant?: 'button' | 
       <Dialog.Trigger asChild>
         <button
           type="button"
-          className={
-            variant === 'tab'
-              ? 'rounded-md px-3 py-1.5 text-[13px] font-medium text-graphite hover:bg-surface2 hover:text-ink'
-              : 'h-8 rounded-md border border-rule bg-surface px-3 text-[13px] font-medium text-graphite hover:bg-surface2 hover:text-ink'
-          }
+          className="text-[12px] font-medium text-accent underline-offset-2 hover:underline"
         >
-          {variant === 'tab' ? 'Equiv. Statements' : 'Equivalent statements'}
+          Equivalent statements →
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -53,8 +55,11 @@ export function EquivalentDialog({ variant = 'button' }: { variant?: 'button' | 
                 {data?.category ?? 'Computed from Matrix A'}
               </Dialog.Description>
             </div>
-            <Dialog.Close className="h-8 w-8 rounded-md border border-rule bg-surface text-lg leading-none text-graphite hover:bg-surface2 hover:text-ink">
-              x
+            <Dialog.Close
+              aria-label="Close"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-rule bg-surface text-xl leading-none text-graphite hover:bg-surface2 hover:text-ink"
+            >
+              ×
             </Dialog.Close>
           </div>
           <div className="max-h-[66vh] overflow-y-auto px-5 py-4">

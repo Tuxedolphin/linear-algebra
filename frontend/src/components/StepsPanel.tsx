@@ -27,24 +27,19 @@ export function StepsPanel() {
                   {String(step.n).padStart(2, '0')}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="overflow-x-auto text-[13px] text-graphite">
-                    <MathTex latex={step.descriptionLatex} />
-                  </div>
-                  <div className="mt-3 flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="math-scroll min-w-0 text-[13px] text-graphite">
+                      <MathTex latex={step.descriptionLatex} />
+                    </div>
                     {step.changedRows?.length ? (
-                      <div className="font-mono text-[10px] font-semibold text-accent">
-                        &gt;R{step.changedRows.map((row) => row + 1).join(', R')}
-                      </div>
-                    ) : null}
-                    {step.matrixLatex ? (
-                      <div className="inline-block overflow-x-auto rounded-md bg-surface2 px-4 py-3">
-                        <MathTex latex={step.matrixLatex} display />
-                      </div>
+                      <span className="rounded-full border border-accentRing bg-accentBg px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-accent">
+                        R{step.changedRows.map((row) => row + 1).join(', R')}
+                      </span>
                     ) : null}
                   </div>
-                  {step.changedRows?.length ? (
-                    <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
-                      row {step.changedRows.map((row) => row + 1).join(', ')} changed
+                  {step.matrixLatex ? (
+                    <div className="math-scroll mt-3 block max-w-full rounded-md bg-surface2 px-4 py-3 text-[0.92rem]">
+                      <MathTex latex={step.matrixLatex} display />
                     </div>
                   ) : null}
                 </div>

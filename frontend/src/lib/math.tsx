@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
@@ -8,12 +9,16 @@ type MathProps = {
 }
 
 export function MathTex({ latex, display = false, className }: MathProps) {
-  const html = katex.renderToString(latex, {
-    displayMode: display,
-    throwOnError: false,
-    strict: 'ignore',
-    trust: false,
-  })
+  const html = useMemo(
+    () =>
+      katex.renderToString(latex, {
+        displayMode: display,
+        throwOnError: false,
+        strict: 'ignore',
+        trust: false,
+      }),
+    [latex, display],
+  )
 
   return (
     <span
