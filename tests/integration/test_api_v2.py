@@ -151,3 +151,42 @@ def test_compute_v2_endpoint_returns_structured_response():
     assert data["operation"] == "rref"
     assert data["blocks"][0]["kind"] == "matrix"
     assert data["blocks"][0]["raw"] == "[1 0; 0 1]"
+
+
+def test_compute_endpoint_parse_error_returns_400_with_parse_code():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.post(
+        "/api/v2/compute",
+        json={"operation": "rref", "matrixA": "[sqrt(2; 1]", "output": "exact"},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "parse"
+
+
+def test_parse_endpoint_returns_grid():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.post("/api/v2/parse", json={"matrix": "[1 sqrt(2); 3 4]"})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["rows"] == 2
+    assert body["cols"] == 2
+    assert body["cells"][0][1] == "sqrt(2)"
+
+
+def test_equivalent_endpoint():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.post("/api/v2/equivalent", json={"matrix": "[1 0; 0 1]"})
+
+    assert response.status_code == 200
+    assert "statements" in response.json()

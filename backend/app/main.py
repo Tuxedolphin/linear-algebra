@@ -7,20 +7,20 @@ import warnings
 import ast
 from concurrent.futures import ThreadPoolExecutor
 from sympy.parsing.sympy_parser import (
+    convert_xor,
+    implicit_multiplication_application,
     parse_expr,
     standard_transformations,
-    implicit_multiplication_application,
-    convert_xor,
 )
-
-_TRANSFORMATIONS = standard_transformations + (implicit_multiplication_application, convert_xor)
-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 import sympy as sym
 from ma1522.symbolic import Matrix
 from app.api_v2 import router as api_v2_router
+from app.equivalent import build_equivalent_statements
+
+_TRANSFORMATIONS = standard_transformations + (implicit_multiplication_application, convert_xor)
 
 app = FastAPI()
 app.include_router(api_v2_router)
@@ -663,6 +663,8 @@ async def equivalent_statements(request: Request):
             return JSONResponse(
                 content={"error": f"Failed to parse matrix: {e}"}, status_code=400
             )
+
+        return JSONResponse(content=build_equivalent_statements(mat))
 
         rows, cols = mat.rows, mat.cols
         with warnings.catch_warnings():
