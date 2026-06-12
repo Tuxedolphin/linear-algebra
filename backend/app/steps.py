@@ -25,6 +25,25 @@ def capture(fn: Callable[[], Any]) -> tuple[Any, str]:
     return result, buf.getvalue()
 
 
+def safe_capture(fn: Callable[[], Any]) -> str:
+    """Run a verbose library call and return its printed working, swallowing
+    any exception.
+
+    Some verbose methods (e.g. ``diagonalize``) print their working *before*
+    a step that may raise (a non-diagonalizable matrix). We still want the
+    working that was printed up to that point, so the exception is ignored.
+    """
+    buf = io.StringIO()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        with contextlib.redirect_stdout(buf):
+            try:
+                fn()
+            except Exception:
+                pass
+    return buf.getvalue()
+
+
 def capture_steps(fn: Callable[[], Any]) -> list[Step]:
     """Run a verbose library call and return structured working steps.
 

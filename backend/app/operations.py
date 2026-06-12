@@ -17,7 +17,7 @@ from app.schemas import (
     VectorItem,
     VectorListBlock,
 )
-from app.steps import capture, capture_steps, parse_steps
+from app.steps import capture, capture_steps, parse_steps, safe_capture
 from ma1522.symbolic import Matrix
 
 
@@ -89,13 +89,48 @@ def _blocks_response(
     return ComputeResponse(operation=request.operation, blocks=blocks, steps=steps or [])
 
 
+# Branch/completion chatter printed by the recursive symbolic RREF engine
+# (``rref_cases``). For a numeric matrix these are just empty-case markers; they
+# are noise as worked steps, so they are filtered out.
+_STEP_NOISE_PREFIXES = ("Completed branch", "Branching on", "Branch ")
+
+
+def _renumber(steps: list[Step]) -> list[Step]:
+    for index, step in enumerate(steps, start=1):
+        step.n = index
+    return steps
+
+
+def _denoise_steps(steps: list[Step]) -> list[Step]:
+    """Drop the symbolic-RREF branch/completion chatter, then renumber."""
+    kept: list[Step] = []
+    for step in steps:
+        plain = (step.descriptionLatex or "").replace("\\text{", "").replace("}", "").strip()
+        if plain == "{}" or any(plain.startswith(prefix) for prefix in _STEP_NOISE_PREFIXES):
+            continue
+        kept.append(step)
+    return _renumber(kept)
+
+
+def _rref_steps(matrix: Matrix) -> list[Step]:
+    """Capture the full step-by-step reduction to RREF.
+
+    ``rref_cases(verbosity=2)`` drives the library's recursive symbolic-RREF
+    engine, which prints every elementary row operation with a matrix snapshot
+    after each — the granular working a student reproduces by hand.
+    """
+    raw = safe_capture(lambda: matrix.rref_cases(verbosity=2))
+    return _denoise_steps(parse_steps(raw))
+
+
 def _rref(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
+    steps = _rref_steps(matrix)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
         result = matrix.rref()[0]
     result = _maybe_decimal_matrix(result, request.output)
-    return _blocks_response(request, [_matrix_block("RREF", result)])
+    return _blocks_response(request, [_matrix_block("RREF", result)], steps)
 
 
 def _ref(request: ComputeRequest) -> ComputeResponse:
@@ -140,7 +175,7 @@ def _gram_schmidt(request: ComputeRequest) -> ComputeResponse:
 
 def _svd(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
-    result = matrix.singular_value_decomposition(verbosity=0)
+    result, raw_steps = capture(lambda: matrix.singular_value_decomposition(verbosity=1))
     return _blocks_response(
         request,
         [
@@ -148,6 +183,7 @@ def _svd(request: ComputeRequest) -> ComputeResponse:
             _matrix_block("Sigma", _maybe_decimal_matrix(result.S, request.output)),
             _matrix_block("V^T", _maybe_decimal_matrix(result.V, request.output)),
         ],
+        parse_steps(raw_steps),
     )
 
 
@@ -185,14 +221,35 @@ def _inv(request: ComputeRequest) -> ComputeResponse:
 
 def _rank(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
+    steps = _rref_steps(matrix)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         rank = matrix.rank()
     nullity = matrix.cols - rank
+    steps.append(
+        Step(
+            n=len(steps) + 1,
+            descriptionLatex=(
+                r"\text{rank}(A) = \text{number of pivots} = " + str(rank)
+                + r",\quad \text{nullity}(A) = " + str(matrix.cols) + " - " + str(rank)
+                + " = " + str(nullity)
+            ),
+        )
+    )
     return _blocks_response(
         request,
         [_scalar_block("rank(A)", rank), _scalar_block("nullity(A)", nullity)],
+        steps,
     )
+
+
+# Both eigen handlers reuse the diagonalize verbose path, which prints the
+# characteristic polynomial followed by, for each real eigenvalue, the matrix
+# (lambda*I - A), its RREF, and the resulting eigenvectors. The printing happens
+# before diagonalize may raise (non-diagonalizable), so safe_capture keeps it.
+def _eigen_steps(matrix: Matrix) -> list[Step]:
+    raw = safe_capture(lambda: matrix.diagonalize(verbosity=1))
+    return _renumber(parse_steps(raw))
 
 
 def _eigenvals(request: ComputeRequest) -> ComputeResponse:
@@ -201,7 +258,7 @@ def _eigenvals(request: ComputeRequest) -> ComputeResponse:
         ScalarBlock(label=f"lambda (mult. {mult})", latex=to_latex(_maybe_decimal_expr(value, request.output)))
         for value, mult in matrix.eigenvals().items()
     ]
-    return _blocks_response(request, blocks)
+    return _blocks_response(request, blocks, _eigen_steps(matrix))
 
 
 def _eigenvects(request: ComputeRequest) -> ComputeResponse:
@@ -209,7 +266,7 @@ def _eigenvects(request: ComputeRequest) -> ComputeResponse:
     blocks: list[ResultBlock] = []
     for value, mult, vectors in matrix.eigenvects():
         blocks.append(_vector_list_block(f"lambda = {to_latex(value)} (mult. {mult})", vectors))
-    return _blocks_response(request, blocks)
+    return _blocks_response(request, blocks, _eigen_steps(matrix))
 
 
 def _diagonalize(request: ComputeRequest) -> ComputeResponse:
@@ -240,18 +297,30 @@ def _orth_diagonalize(request: ComputeRequest) -> ComputeResponse:
 
 def _nullspace(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        vectors = matrix.nullspace()
-    return _blocks_response(request, [_vector_list_block("Null(A)", vectors)])
+    vectors, raw_steps = capture(lambda: matrix.nullspace(verbosity=1))
+    return _blocks_response(
+        request,
+        [_vector_list_block("Null(A)", vectors)],
+        parse_steps(raw_steps),
+    )
 
 
 def _colspace(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
+    steps = _rref_steps(matrix)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         vectors = matrix.columnspace()
-    return _blocks_response(request, [_vector_list_block("Col(A)", vectors)])
+    steps.append(
+        Step(
+            n=len(steps) + 1,
+            descriptionLatex=(
+                r"\text{The pivot columns of } A \text{ (the original columns at the pivot "
+                r"positions above) form a basis for the column space.}"
+            ),
+        )
+    )
+    return _blocks_response(request, [_vector_list_block("Col(A)", vectors)], steps)
 
 
 def _orth_complement(request: ComputeRequest) -> ComputeResponse:
@@ -287,13 +356,18 @@ def _extend_basis(request: ComputeRequest) -> ComputeResponse:
 def _solve(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
     rhs = _rhs_or_zero(request, matrix.rows)
+    raw_steps = ""
     try:
-        solutions = matrix.solve(rhs)
+        solutions, raw_steps = capture(lambda: matrix.solve(rhs, verbosity=1))
     except Exception:
         solutions = []
     if not solutions:
         return _blocks_response(request, [ScalarBlock(label="Solution", latex="\\text{No solution}")])
-    return _blocks_response(request, [_matrix_block("x", _maybe_decimal_matrix(solutions[0], request.output))])
+    return _blocks_response(
+        request,
+        [_matrix_block("x", _maybe_decimal_matrix(solutions[0], request.output))],
+        parse_steps(raw_steps),
+    )
 
 
 def _least_squares(request: ComputeRequest) -> ComputeResponse:
@@ -375,6 +449,16 @@ def _find_cases(request: ComputeRequest) -> ComputeResponse:
     return _blocks_response(request, [ScalarBlock(label="Cases", latex=latex)])
 
 
+def _operand_label(name: str, mod: str) -> str:
+    if mod == "T":
+        return f"{name}^{{T}}"
+    if mod == "inv":
+        return f"{name}^{{-1}}"
+    if mod == "inv_T":
+        return f"\\left({name}^{{-1}}\\right)^{{T}}"
+    return name
+
+
 def _apply_mod(matrix: sym.MatrixBase, mod: str) -> sym.MatrixBase:
     if mod == "none":
         return matrix
@@ -400,16 +484,55 @@ def _chain_multiply(request: ComputeRequest) -> ComputeResponse:
     if len(operands) < 2:
         raise ValueError("chain_multiply requires at least two matrices.")
 
+    names = ["A", "B", "C"]
     result = _apply_mod(operands[0][0], operands[0][1])
-    for operand, mod in operands[1:]:
+    expr = _operand_label(names[0], operands[0][1])
+    steps: list[Step] = []
+    for index, (operand, mod) in enumerate(operands[1:], start=1):
         result = (result @ _apply_mod(operand, mod)).doit()
-    return _blocks_response(request, [_matrix_block("Product", _maybe_decimal_matrix(result, request.output))])
+        expr = f"{expr} {_operand_label(names[index], mod)}"
+        steps.append(
+            Step(
+                n=len(steps) + 1,
+                descriptionLatex=f"{expr} =",
+                matrixLatex=to_bmatrix(_maybe_decimal_matrix(result, request.output)),
+            )
+        )
+    return _blocks_response(
+        request,
+        [_matrix_block("Product", _maybe_decimal_matrix(result, request.output))],
+        steps,
+    )
 
 
 def _markov_steady(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
+    # Steady state pi solves (I - A) pi = 0, i.e. it is the nullspace of (I - A),
+    # then normalised so its entries sum to 1 (mirrors equilibrium_vectors()).
+    i_minus_a = matrix.elem() - matrix
+    null_raw = safe_capture(lambda: i_minus_a.nullspace(verbosity=1))
     result = matrix.equilibrium_vectors()
-    return _blocks_response(request, [_matrix_block("pi", _maybe_decimal_matrix(result, request.output))])
+
+    steps: list[Step] = [
+        Step(
+            n=1,
+            descriptionLatex=r"\text{The steady state }\pi\text{ solves }(I - A)\,\pi = 0:",
+            matrixLatex=to_bmatrix(_maybe_decimal_matrix(i_minus_a, request.output)),
+        )
+    ]
+    steps.extend(parse_steps(null_raw))
+    steps.append(
+        Step(
+            n=0,
+            descriptionLatex=r"\text{Normalise so the entries sum to }1:\quad \pi =",
+            matrixLatex=to_bmatrix(_maybe_decimal_matrix(result, request.output)),
+        )
+    )
+    return _blocks_response(
+        request,
+        [_matrix_block("pi", _maybe_decimal_matrix(result, request.output))],
+        _renumber(steps),
+    )
 
 
 def _markov_kstep(request: ComputeRequest) -> ComputeResponse:
@@ -424,12 +547,25 @@ def _markov_kstep(request: ComputeRequest) -> ComputeResponse:
         raise ValueError("k must be <= 100.")
     matrix_power = matrix**k
     distribution = matrix_power * initial
+    steps = [
+        Step(
+            n=1,
+            descriptionLatex=f"A^{{{k}}} =",
+            matrixLatex=to_bmatrix(_maybe_decimal_matrix(matrix_power, request.output)),
+        ),
+        Step(
+            n=2,
+            descriptionLatex=f"x_{{{k}}} = A^{{{k}}} x_0 =",
+            matrixLatex=to_bmatrix(_maybe_decimal_matrix(distribution, request.output)),
+        ),
+    ]
     return _blocks_response(
         request,
         [
             _matrix_block(f"x_{k}", _maybe_decimal_matrix(distribution, request.output)),
             _matrix_block(f"A^{k}", _maybe_decimal_matrix(matrix_power, request.output)),
         ],
+        steps,
     )
 
 
