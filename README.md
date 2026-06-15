@@ -100,6 +100,24 @@ Open the Vite URL shown in the terminal, usually [http://localhost:5173](http://
 
 The FastAPI backend exposes only `/api/v2/*` routes. Static frontend assets are served by Vite in development and by the frontend host in production.
 
+## Offline Exam Mode
+
+Use the offline launcher during an exam when Wi-Fi is unavailable. It does not install dependencies, sync packages, or build assets; it only serves the already-built frontend and local backend from `127.0.0.1`.
+
+Windows PowerShell:
+
+```powershell
+scripts\start-exam-local.ps1
+```
+
+macOS Terminal:
+
+```bash
+bash scripts/start-exam-local-macos.command
+```
+
+Then open [http://127.0.0.1:8000](http://127.0.0.1:8000). Keep the terminal window open while using the calculator. The exam-mode server serves the built React frontend and `/api/v2/*` backend from the same localhost origin.
+
 ## Deployment
 
 The production app is split into a static Vite frontend and a Python API backend.
