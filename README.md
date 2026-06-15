@@ -134,6 +134,19 @@ ALLOWED_ORIGINS=https://linear-algebra.example.com
 
 When all browser traffic reaches the API through a same-origin edge proxy, `ALLOWED_ORIGINS` can stay unset.
 
+For a VPS deployment, use the templates in `deploy/vps/` as a starting point:
+
+- `linear-algebra-api.service.example` runs uvicorn on `127.0.0.1:8000` under systemd.
+- `nginx.conf.example` proxies public `/api/*` traffic to the local uvicorn process.
+
+Replace the example domains and certificate paths after issuing TLS certificates, for example with Certbot.
+
+After the service and reverse proxy are running, verify the API:
+
+```bash
+curl https://linear-algebra-api.example.com/api/v2/health
+```
+
 ### Optional API Edge Proxy: Cloudflare Worker
 
 `deploy/cloudflare-api-proxy/` contains a small Worker that proxies `/api/*` to the FastAPI host.

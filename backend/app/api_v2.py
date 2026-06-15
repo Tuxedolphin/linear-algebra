@@ -22,6 +22,11 @@ class MatrixOnly(BaseModel):
     matrix: str
 
 
+@router.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 def _error_response(
     code: str,
     message: str,

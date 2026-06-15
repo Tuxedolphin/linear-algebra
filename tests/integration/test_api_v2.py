@@ -236,6 +236,17 @@ def test_equivalent_endpoint():
     assert "statements" in response.json()
 
 
+def test_health_endpoint_returns_ok():
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.get("/api/v2/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 OP_FIXTURES = {
     "ref": {"matrixA": "[2 1 -1; 4 3 2; -2 0 5]"},
     "rref": {"matrixA": "[1 2; 3 4]"},

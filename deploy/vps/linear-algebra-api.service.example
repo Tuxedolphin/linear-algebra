@@ -1,0 +1,17 @@
+[Unit]
+Description=Linear Algebra Studio API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=linear-algebra
+Group=linear-algebra
+WorkingDirectory=/srv/linear-algebra
+Environment=ALLOWED_ORIGINS=https://linear-algebra.example.com
+ExecStart=/usr/local/bin/uv run uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
