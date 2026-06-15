@@ -114,11 +114,11 @@ Create a Worker from the Cloudflare dashboard using **Workers & Pages -> Create 
 | --- | --- |
 | Production branch | `main` |
 | Path | `frontend` |
-| Build command | `pnpm install --frozen-lockfile && pnpm build` |
+| Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy` |
 | Node.js version | `22` |
 
-The frontend Worker config lives at `frontend/wrangler.jsonc`. It uploads `frontend/dist` as Workers Static Assets and uses `single-page-application` fallback routing for client-side routes.
+The frontend Worker config lives at `frontend/wrangler.jsonc`. It uploads `frontend/dist` as Workers Static Assets and uses `single-page-application` fallback routing for client-side routes. Do not add a Pages-style `_redirects` SPA fallback; Workers Static Assets validates those rules differently and rejects the legacy `/* /index.html 200` rule as a loop.
 
 Configure these Cloudflare build environment variables:
 
