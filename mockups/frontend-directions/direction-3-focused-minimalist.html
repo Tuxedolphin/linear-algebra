@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction 3 — Focused Minimalist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]})"></script>
+<style>
+:root {
+  --bg:     #f8f8f7;
+  --white:  #ffffff;
+  --ink:    #0f0f0e;
+  --ink-2:  #6b6b68;
+  --ink-3:  #a8a8a4;
+  --line:   #e6e6e3;
+  --line-2: #d0d0cc;
+  --active: #0f0f0e;   /* no color accent — ink itself is the accent */
+  --active-w: rgba(15,15,14,0.05);
+  --ok:     #1a7a4a;
+  --bg-str: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  --mono:   'JetBrains Mono', 'Fira Code', monospace;
+  --r:      4px;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: light; }
+body {
+  font-family: var(--bg-str);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100dvh;
+  font-size: 13.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  display: grid; place-items: center;
+  font-family: var(--mono);
+  font-size: 12px; font-weight: 500;
+  color: var(--ink);
+}
+.logo-name {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.logo-sub {
+  font-size: 11px; color: var(--ink-3);
+  margin-left: 6px;
+  font-weight: 400;
+}
+
+.topbar-center {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.tab {
+  padding: 5px 13px;
+  font-size: 12px; font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer; border: none; border-right: 1px solid var(--line); background: var(--white);
+  font-family: var(--bg-str);
+  transition: background 100ms, color 100ms;
+}
+.tab:last-child { border-right: none; }
+.tab.active {
+  background: var(--ink);
+  color: white;
+}
+.tab:hover:not(.active) { background: var(--bg); color: var(--ink); }
+
+.topbar-right {
+  display: flex; align-items: center; gap: 6px;
+}
+.icon-btn {
+  width: 30px; height: 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ink-2);
+  display: grid; place-items: center;
+  cursor: pointer; font-size: 12px;
+  transition: all 100ms;
+}
+.icon-btn:hover { background: var(--bg); color: var(--ink); }
+.back-link {
+  font-size: 11.5px; color: var(--ink-3); text-decoration: none;
+  padding: 4px 8px; border-radius: var(--r);
+  transition: color 100ms;
+}
+.back-link:hover { color: var(--ink); background: var(--bg); }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  height: calc(100dvh - 48px);
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  background: var(--white);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.left-panel::-webkit-scrollbar { width: 3px; }
+.left-panel::-webkit-scrollbar-thumb { background: var(--line-2); }
+
+.section-head {
+  padding: 14px 16px 4px;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Matrix card — pure flat, no shadow */
+.matrix-card {
+  margin: 0 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.matrix-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.matrix-label {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--ink);
+}
+.dim-controls { display: flex; align-items: center; gap: 3px; }
+.dim-input {
+  width: 32px; height: 24px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-align: center;
+}
+.dim-sep { color: var(--ink-3); font-size: 10px; margin: 0 1px; }
+.btn-sm {
+  height: 24px; padding: 0 8px;
+  font-family: var(--bg-str); font-size: 11px; font-weight: 500;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 3px; color: var(--ink-2); cursor: pointer;
+  transition: all 80ms;
+}
+.btn-sm:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+/* Grid — no backgrounds, just cells */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+.cell {
+  background: var(--white);
+  border: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  text-align: center;
+  padding: 8px 4px;
+  width: 100%;
+  transition: background 100ms;
+}
+.cell:focus {
+  outline: none;
+  background: var(--active-w);
+}
+
+/* Equiv */
+.equiv-btn {
+  margin: 0 12px 12px;
+  width: calc(100% - 24px);
+  padding: 7px 10px;
+  display: flex; align-items: center; gap: 7px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--ink-2);
+  font-family: var(--bg-str); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 100ms;
+}
+.equiv-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--bg); }
+
+/* Search */
+.op-search {
+  margin: 0 12px 6px;
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 0 9px;
+  background: var(--bg);
+}
+.op-search svg { color: var(--ink-3); flex-shrink: 0; }
+.op-search input {
+  flex: 1; height: 30px; background: none; border: none;
+  color: var(--ink); font-family: var(--bg-str); font-size: 12px;
+}
+.op-search input::placeholder { color: var(--ink-3); }
+.op-search input:focus { outline: none; }
+
+/* Op groups — minimal: dividers only, no background */
+.op-group { border-top: 1px solid var(--line); }
+.group-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 11.5px; font-weight: 600;
+  color: var(--ink-2);
+  transition: color 100ms;
+  user-select: none;
+}
+.group-head:hover { color: var(--ink); }
+.group-body { padding: 2px 12px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.op-btn {
+  padding: 3px 9px;
+  font-family: var(--bg-str); font-size: 11.5px; font-weight: 400;
+  background: transparent; border: 1px solid var(--line);
+  border-radius: 3px; color: var(--ink-2); cursor: pointer;
+  transition: all 80ms;
+}
+.op-btn:hover { color: var(--ink); border-color: var(--line-2); background: var(--bg); }
+.op-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* Op bar — minimal: just text + action */
+.op-bar {
+  height: 46px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--white);
+  flex-shrink: 0;
+}
+.op-bar-left { display: flex; align-items: center; gap: 12px; }
+.op-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+}
+.compute-btn {
+  height: 30px; padding: 0 14px;
+  background: var(--ink);
+  border: none; border-radius: 3px;
+  color: white;
+  font-family: var(--bg-str); font-size: 12px; font-weight: 500;
+  cursor: pointer;
+  transition: opacity 100ms;
+}
+.compute-btn:hover { opacity: 0.82; }
+.compute-btn:active { transform: scale(0.98); }
+.status-dot {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--ok);
+  font-weight: 500;
+}
+.status-dot::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+.op-bar-right { display: flex; align-items: center; gap: 5px; }
+
+/* Result area */
+.result-scroll {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.result-scroll::-webkit-scrollbar { width: 3px; }
+.result-scroll::-webkit-scrollbar-thumb { background: var(--line-2); }
+
+/* Result cards — flat, just borders */
+.result-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.result-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.result-card-title {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.copy-btn {
+  height: 22px; padding: 0 8px;
+  font-family: var(--bg-str); font-size: 10.5px; font-weight: 500;
+  background: transparent; border: 1px solid var(--line);
+  border-radius: 3px; color: var(--ink-3); cursor: pointer;
+  transition: all 80ms;
+}
+.copy-btn:hover { border-color: var(--line-2); color: var(--ink); background: var(--bg); }
+
+.input-display {
+  padding: 10px 14px;
+  font-size: 12.5px; color: var(--ink-2);
+}
+
+/* Answer — max focus, minimum chrome */
+.answer-display {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 20px;
+  gap: 6px;
+}
+.answer-label {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* KaTeX — clean */
+.katex { color: var(--ink) !important; font-size: 1.1em !important; }
+.katex-display { margin: 4px 0 !important; }
+
+/* Steps — no markers, pure indentation */
+.step-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.step-row:last-child { border-bottom: none; }
+.step-n {
+  flex-shrink: 0; margin-top: 2px;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 500;
+  color: var(--ink-3); width: 14px; text-align: right;
+}
+.step-content { flex: 1; }
+.step-ero {
+  font-size: 11px; color: var(--ink-2);
+  font-family: var(--mono);
+  margin-bottom: 6px;
+}
+
+/* Direction badge */
+.direction-banner {
+  position: fixed; bottom: 16px; right: 16px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  max-width: 230px;
+}
+.direction-banner strong {
+  font-size: 12.5px; font-weight: 600; color: var(--ink);
+  display: block; margin-bottom: 4px;
+}
+.direction-banner span { font-size: 11.5px; color: var(--ink-2); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <div>
+      <span class="logo-name">MA1522 Studio</span>
+      <span class="logo-sub">NUS</span>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <button class="tab active">Calculator</button>
+    <button class="tab">Equivalence</button>
+    <button class="tab">History</button>
+  </div>
+  <div class="topbar-right">
+    <a href="index.html" class="back-link">← All</a>
+    <button class="icon-btn">↺</button>
+    <button class="icon-btn">↻</button>
+    <button class="icon-btn">?</button>
+    <button class="icon-btn">⚙</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT -->
+  <aside class="left-panel">
+    <div class="section-head">Input</div>
+
+    <div class="matrix-card">
+      <div class="matrix-card-head">
+        <span class="matrix-label">Matrix A</span>
+        <div class="dim-controls">
+          <input class="dim-input" type="number" value="2" min="1" max="10">
+          <span class="dim-sep">×</span>
+          <input class="dim-input" type="number" value="2" min="1" max="10">
+          <button class="btn-sm">Set</button>
+        </div>
+      </div>
+      <div class="matrix-grid">
+        <input class="cell" value="2">
+        <input class="cell" value="4">
+        <input class="cell" value="1">
+        <input class="cell" value="3">
+      </div>
+    </div>
+
+    <button class="equiv-btn">
+      <svg width="12" height="12" fill="none" viewBox="0 0 15 15"><path d="M2 4.5h11M2 7.5h8M2 10.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Equivalent Statements
+    </button>
+
+    <div class="section-head">Operations</div>
+
+    <div class="op-search">
+      <svg width="12" height="12" fill="none" viewBox="0 0 13 13"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search…">
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Row Reduction <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn active">RREF</button>
+        <button class="op-btn">REF</button>
+      </div>
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Factorizations <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">LU / PLU</button>
+        <button class="op-btn">QR</button>
+        <button class="op-btn">SVD</button>
+        <button class="op-btn">Gram-Schmidt</button>
+      </div>
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Properties <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Determinant</button>
+        <button class="op-btn">Inverse</button>
+        <button class="op-btn">Rank &amp; Nullity</button>
+      </div>
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Eigen Analysis <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Eigenvalues</button>
+        <button class="op-btn">Eigenvectors</button>
+        <button class="op-btn">Diagonalize</button>
+      </div>
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Vector Spaces <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Nullspace</button>
+        <button class="op-btn">Col. Space</button>
+        <button class="op-btn">Orth. Complement</button>
+      </div>
+    </div>
+
+    <div class="op-group">
+      <div class="group-head">Linear Systems <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Solve Ax=b</button>
+        <button class="op-btn">Least Squares</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT -->
+  <main class="right-panel">
+    <div class="op-bar">
+      <div class="op-bar-left">
+        <span class="op-name">RREF</span>
+        <button class="compute-btn">Compute</button>
+        <span class="status-dot">Ready</span>
+      </div>
+      <div class="op-bar-right">
+        <button class="icon-btn">✕</button>
+      </div>
+    </div>
+
+    <div class="result-scroll">
+
+      <div class="result-card">
+        <div class="result-card-head">
+          <span class="result-card-title">Input</span>
+        </div>
+        <div class="input-display">
+          \( A = \begin{pmatrix} 2 & 4 \\ 1 & 3 \end{pmatrix} \)
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card-head">
+          <span class="result-card-title">Result</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="answer-display">
+          <span class="answer-label">RREF</span>
+          \[ \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \]
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card-head">
+          <span class="result-card-title">Working Steps</span>
+          <button class="copy-btn">Hide</button>
+        </div>
+
+        <div class="step-row">
+          <div class="step-n">1</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_1 \leftarrow \tfrac{1}{2} R_1 \)</div>
+            \[ \begin{pmatrix} 1 & 2 \\ 1 & 3 \end{pmatrix} \]
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-n">2</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_2 \leftarrow R_2 - R_1 \)</div>
+            \[ \begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix} \]
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-n">3</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_1 \leftarrow R_1 - 2R_2 \)</div>
+            \[ \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \]
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="direction-banner">
+  <strong>Direction 3 — Focused Minimalist</strong>
+  <span>Near-monochrome, flat surfaces, dividers over cards. Zero ornament. Maximum cognitive focus — ideal for exam conditions.</span>
+</div>
+
+</body>
+</html>

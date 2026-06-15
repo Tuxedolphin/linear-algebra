@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Outfit, ui-sans-serif, system-ui, sans-serif;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  --color-bg: #f3eee5;
+  --color-panel: #fdfaf4;
+  --color-surface: #ffffff;
+  --color-surface-2: #ede8de;
+  --color-ink: #1e1a14;
+  --color-muted: #6a5d4d;
+  --color-faint: #9a8e7c;
+  --color-border: rgba(30, 26, 20, 0.08);
+  --color-border-2: rgba(30, 26, 20, 0.14);
+  --color-accent: #96501c;
+  --color-accent-bg: rgba(150, 80, 28, 0.08);
+  --color-accent-ring: rgba(150, 80, 28, 0.2);
+  --color-ok: #2a6640;
+  --color-ok-bg: rgba(42, 102, 64, 0.1);
+  --color-danger: #b3261e;
+  --color-danger-bg: rgba(179, 38, 30, 0.08);
+  --shadow-panel: 0 1px 3px rgba(30, 26, 20, 0.06),
+    0 6px 20px rgba(30, 26, 20, 0.05);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+button,
+[role='option'],
+[tabindex] {
+  outline: none;
+}
+
+button:focus-visible,
+[role='option']:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-accent-ring);
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-theme='dark'] {
+  --color-bg: #0d0d0c;
+  --color-panel: #131312;
+  --color-surface: #1a1a19;
+  --color-surface-2: #222220;
+  --color-ink: #e8e8e5;
+  --color-muted: #9a9a94;
+  --color-faint: #6a6a64;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-2: rgba(255, 255, 255, 0.1);
+  --color-accent: #c07b3e;
+  --color-accent-bg: rgba(192, 123, 62, 0.08);
+  --color-accent-ring: rgba(192, 123, 62, 0.22);
+  --color-ok: #3a8f58;
+  --color-ok-bg: rgba(58, 143, 88, 0.1);
+  --color-danger: #e07a6e;
+  --color-danger-bg: rgba(224, 122, 110, 0.1);
+  --shadow-panel: none;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@layer base {
+  ::selection {
+    color: var(--color-bg);
+    background: var(--color-accent);
+  }
+
+  .katex-display {
+    margin: 0;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-2);
+    border-radius: 999px;
+  }
+}
+
+/* Horizontal-only, thin, unobtrusive scroller for wide math (augmented
+   matrices, long expressions). Prevents the chunky double scrollbars that
+   appear when display math overflows its card. */
+.math-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-2) transparent;
+}
+
+.math-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.math-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.math-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border-2);
+  border-radius: 999px;
+}

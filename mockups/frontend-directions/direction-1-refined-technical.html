@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction 1 — Refined Technical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]})"></script>
+
+<style>
+:root {
+  --bg:       #080810;
+  --surface:  #0f0f1a;
+  --surface2: #161624;
+  --surface3: #1e1e30;
+  --border:   rgba(120, 120, 200, 0.12);
+  --border2:  rgba(120, 120, 200, 0.22);
+  --text:     #e8e8ff;
+  --text-2:   #9090c0;
+  --text-3:   #555580;
+  --accent:   #6366f1;
+  --accent-d: #4f52d4;
+  --accent-glow: rgba(99, 102, 241, 0.18);
+  --green:    #34d399;
+  --mono: 'Space Mono', 'Fira Code', monospace;
+  --sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --r: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { color-scheme: dark; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 75% 0%, rgba(99,102,241,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 100%, rgba(99,102,241,0.04) 0%, transparent 50%),
+    repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(120,120,200,0.03) 32px),
+    repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(120,120,200,0.03) 32px);
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,8,16,0.85);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 5px;
+  display: grid; place-items: center;
+  font-family: var(--mono);
+  font-weight: 700; font-size: 12px;
+  color: white;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.logo-name { font-size: 13px; font-weight: 700; letter-spacing: 0.01em; }
+.logo-sub  { font-size: 10px; color: var(--text-3); margin-top: 1px; font-family: var(--mono); }
+
+.topbar-center {
+  display: flex; align-items: center; gap: 2px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+.tab {
+  padding: 5px 14px;
+  border-radius: 5px;
+  font-size: 11px; font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer; border: none; background: none;
+  font-family: var(--mono);
+  transition: all 120ms ease;
+}
+.tab.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.tab:hover:not(.active) { background: var(--surface3); color: var(--text); }
+
+.topbar-right {
+  display: flex; align-items: center; gap: 8px;
+}
+.icon-btn {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface2);
+  color: var(--text-2);
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+  font-size: 13px;
+}
+.icon-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface3); }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - 52px);
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.left-panel::-webkit-scrollbar { width: 4px; }
+.left-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.section-head {
+  padding: 14px 16px 8px;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+/* Matrix input */
+.matrix-card {
+  margin: 0 12px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.matrix-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.matrix-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.dim-controls {
+  display: flex; align-items: center; gap: 4px;
+}
+.dim-input {
+  width: 32px; height: 24px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-align: center;
+}
+.dim-sep { color: var(--text-3); font-size: 10px; }
+.btn-sm {
+  height: 24px; padding: 0 8px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 4px; color: var(--text-2); cursor: pointer;
+  transition: all 100ms ease;
+}
+.btn-sm:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* Grid */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  padding: 8px;
+  gap: 4px;
+}
+.cell {
+  background: var(--surface3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+  padding: 6px 4px;
+  width: 100%;
+  transition: border-color 120ms;
+}
+.cell:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+  background: rgba(99,102,241,0.08);
+}
+
+/* Op search */
+.op-search {
+  margin: 0 12px 8px;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 8px;
+}
+.op-search svg { color: var(--text-3); flex-shrink: 0; }
+.op-search input {
+  flex: 1; height: 32px; background: none; border: none;
+  color: var(--text); font-family: var(--mono); font-size: 11px;
+}
+.op-search input::placeholder { color: var(--text-3); }
+.op-search input:focus { outline: none; }
+
+/* Op groups */
+.op-group { margin: 0 12px 4px; }
+.group-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  text-transform: uppercase;
+  transition: background 100ms;
+}
+.group-head:hover { background: var(--surface2); }
+.group-body { padding: 2px 0 6px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.op-btn {
+  padding: 4px 10px;
+  font-family: var(--mono); font-size: 11px; font-weight: 400;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 4px; color: var(--text-2); cursor: pointer;
+  transition: all 100ms ease;
+}
+.op-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.op-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* Op bar */
+.op-bar {
+  height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,8,16,0.6);
+  flex-shrink: 0;
+}
+.op-bar-left { display: flex; align-items: center; gap: 12px; }
+.op-name {
+  font-size: 12px; font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.compute-btn {
+  height: 32px; padding: 0 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r);
+  color: white;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--accent-glow);
+  transition: all 120ms ease;
+  letter-spacing: 0.02em;
+}
+.compute-btn:hover { background: var(--accent-d); box-shadow: 0 0 20px var(--accent-glow); }
+.status-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--green);
+  border: 1px solid rgba(52,211,153,0.2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.op-bar-right { display: flex; align-items: center; gap: 6px; }
+
+/* Result area */
+.result-scroll {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.result-scroll::-webkit-scrollbar { width: 5px; }
+.result-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.result-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.result-card-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.result-card-body {
+  padding: 16px;
+}
+
+.input-display {
+  font-size: 11px; color: var(--text-2);
+}
+
+.answer-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px;
+  gap: 12px;
+}
+.answer-label {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* KaTeX override for dark */
+.katex { color: var(--text) !important; font-size: 1.1em !important; }
+.katex-display { margin: 8px 0 !important; }
+
+.copy-btn {
+  height: 26px; padding: 0 10px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: 4px; color: var(--text-3); cursor: pointer;
+  transition: all 100ms ease;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.steps-section { }
+.step-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.step-row:last-child { border-bottom: none; }
+.step-num {
+  width: 20px; height: 20px;
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 9px; font-weight: 700;
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-content { flex: 1; }
+.step-ero {
+  font-size: 10px; color: var(--accent);
+  font-weight: 700; margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* direction badge */
+.direction-banner {
+  position: fixed; bottom: 16px; right: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 10px;
+  max-width: 220px;
+}
+.direction-banner strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 11px; }
+.direction-banner span { color: var(--text-2); line-height: 1.5; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; color: var(--text-3); text-decoration: none;
+  padding: 4px 8px; border-radius: 4px;
+}
+.back-link:hover { color: var(--text); background: var(--surface2); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <div>
+      <div class="logo-name">MA1522 Studio</div>
+      <div class="logo-sub">NUS Linear Algebra</div>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <button class="tab active">Calculator</button>
+    <button class="tab">Equivalence</button>
+    <button class="tab">History</button>
+  </div>
+  <div class="topbar-right">
+    <a href="index.html" class="back-link">← All directions</a>
+    <button class="icon-btn" title="Undo">↺</button>
+    <button class="icon-btn" title="Redo">↻</button>
+    <button class="icon-btn" title="Help">?</button>
+    <button class="icon-btn" title="Settings">⚙</button>
+  </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+    <div class="section-head">Input</div>
+
+    <!-- Matrix A -->
+    <div class="matrix-card">
+      <div class="matrix-card-head">
+        <span class="matrix-label">Matrix A</span>
+        <div class="dim-controls">
+          <input class="dim-input" type="number" value="2" min="1" max="10">
+          <span class="dim-sep">×</span>
+          <input class="dim-input" type="number" value="2" min="1" max="10">
+          <button class="btn-sm">Set</button>
+        </div>
+      </div>
+      <div style="padding: 8px;">
+        <div class="matrix-grid">
+          <input class="cell" value="2">
+          <input class="cell" value="4">
+          <input class="cell" value="1">
+          <input class="cell" value="3">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" style="padding-top:6px;">Operations</div>
+
+    <!-- Op search -->
+    <div class="op-search">
+      <svg width="12" height="12" fill="none" viewBox="0 0 13 13"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search operations…">
+    </div>
+
+    <!-- Row Reduction -->
+    <div class="op-group">
+      <div class="group-head">Row Reduction <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn active">RREF</button>
+        <button class="op-btn">REF</button>
+      </div>
+    </div>
+
+    <!-- Factorizations -->
+    <div class="op-group">
+      <div class="group-head">Factorizations <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">LU / PLU</button>
+        <button class="op-btn">QR</button>
+        <button class="op-btn">SVD</button>
+        <button class="op-btn">Gram-Schmidt</button>
+      </div>
+    </div>
+
+    <!-- Properties -->
+    <div class="op-group">
+      <div class="group-head">Properties <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Determinant</button>
+        <button class="op-btn">Inverse</button>
+        <button class="op-btn">Rank &amp; Nullity</button>
+      </div>
+    </div>
+
+    <!-- Eigen -->
+    <div class="op-group">
+      <div class="group-head">Eigen Analysis <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Eigenvalues</button>
+        <button class="op-btn">Eigenvectors</button>
+        <button class="op-btn">Diagonalize</button>
+      </div>
+    </div>
+
+    <!-- Vector Spaces -->
+    <div class="op-group">
+      <div class="group-head">Vector Spaces <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Nullspace</button>
+        <button class="op-btn">Col. Space</button>
+        <button class="op-btn">Orth. Complement</button>
+      </div>
+    </div>
+
+    <!-- Linear Systems -->
+    <div class="op-group">
+      <div class="group-head">Linear Systems <span>▾</span></div>
+      <div class="group-body">
+        <button class="op-btn">Solve Ax=b</button>
+        <button class="op-btn">Least Squares</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <main class="right-panel">
+
+    <!-- Op bar -->
+    <div class="op-bar">
+      <div class="op-bar-left">
+        <span class="op-name">RREF</span>
+        <button class="compute-btn">▶ Compute</button>
+        <span class="status-badge">Ready</span>
+      </div>
+      <div class="op-bar-right">
+        <button class="icon-btn" title="Cancel">✕</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="result-scroll">
+
+      <!-- Input summary -->
+      <div class="result-card">
+        <div class="result-card-head">
+          <span class="result-card-title">Input</span>
+        </div>
+        <div class="result-card-body input-display">
+          \( A = \begin{pmatrix} 2 & 4 \\ 1 & 3 \end{pmatrix} \)
+        </div>
+      </div>
+
+      <!-- Answer -->
+      <div class="result-card">
+        <div class="result-card-head">
+          <span class="result-card-title">Result — RREF</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <div class="answer-display">
+          <span class="answer-label">Reduced Row Echelon Form</span>
+          \[ \text{rref}(A) = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \]
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="result-card steps-section">
+        <div class="result-card-head">
+          <span class="result-card-title">Working Steps</span>
+          <button class="copy-btn">Hide</button>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_1 \leftarrow \tfrac{1}{2} R_1 \)</div>
+            \[ \begin{pmatrix} 1 & 2 \\ 1 & 3 \end{pmatrix} \]
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_2 \leftarrow R_2 - R_1 \)</div>
+            \[ \begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix} \]
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-ero">\( R_1 \leftarrow R_1 - 2R_2 \)</div>
+            \[ \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \]
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Direction badge -->
+<div class="direction-banner">
+  <strong>Direction 1 — Refined Technical</strong>
+  <span>Dark precision tool. Monospace-forward, indigo accent, grid texture. Feels like a serious engineering environment.</span>
+</div>
+
+</body>
+</html>

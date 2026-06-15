@@ -14,6 +14,8 @@ wheels/
 eggs/
 .eggs/
 lib/
+!frontend/src/lib/
+!frontend/src/lib/**
 lib64/
 parts/
 sdist/
@@ -67,10 +69,15 @@ docs/_static/generated/
 # Packaging / Dependency managers
 # ============================================================
 node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
 .npm/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+!frontend/pnpm-lock.yaml
+*.local
 
 # ============================================================
 # IDE — VS Code
@@ -102,6 +109,9 @@ out/
 # Claude Code / AI tooling
 # ============================================================
 .claude/
+.superpowers/
+docs/superpowers/
+HANDOFF.md
 
 # ============================================================
 # macOS

@@ -14,7 +14,7 @@ import pytest
 import sympy as sym
 
 # Import the helpers directly from the GUI module
-from gui.app import parse_matrix, _parse_bracket_format
+from app.main import parse_matrix, _parse_bracket_format
 
 
 # ---------------------------------------------------------------------------

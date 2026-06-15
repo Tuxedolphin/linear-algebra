@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MA1522 Studio — Unified Design v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]})"></script>
+
+<style>
+/* ═══════════════════════════════════════════════
+   TOKEN LAYER — both themes share these names
+   ═══════════════════════════════════════════════ */
+:root,
+[data-theme="light"] {
+  --bg:           #F5F0E8;
+  --bg-deep:      #EDE8DF;
+  --surface:      #FFFEF9;
+  --surface-2:    #F8F4EC;
+  --ink:          #231F19;
+  --ink-2:        #7A6E5F;
+  --ink-3:        #B5A898;
+  --border:       rgba(35,31,25,0.10);
+  --border-2:     rgba(35,31,25,0.17);
+  --accent:       #A8622A;
+  --accent-dim:   rgba(168,98,42,0.09);
+  --accent-ring:  rgba(168,98,42,0.20);
+  --accent-text:  #A8622A;
+  --ok:           #3A6B4A;
+  --ok-dim:       rgba(58,107,74,0.10);
+  --info:         #2E567A;
+  --info-dim:     rgba(46,86,122,0.10);
+  --purple:       #6B4F8A;
+  --purple-dim:   rgba(107,79,138,0.10);
+  --shadow-sm:    0 1px 3px rgba(35,31,25,0.06), 0 4px 12px rgba(35,31,25,0.04);
+  --shadow:       0 2px 6px rgba(35,31,25,0.08), 0 8px 24px rgba(35,31,25,0.05);
+  --topbar-bg:    var(--surface);
+  --sidebar-bg:   var(--surface);
+  --result-bg:    var(--surface);
+  --font-display: 'EB Garamond', Georgia, serif;
+  --font-ui:      'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg:           #0A0A0A;
+  --bg-deep:      #070707;
+  --surface:      #131313;
+  --surface-2:    #1A1A1A;
+  --ink:          #EDEDED;
+  --ink-2:        #888885;
+  --ink-3:        #444441;
+  --border:       rgba(255,255,255,0.07);
+  --border-2:     rgba(255,255,255,0.13);
+  --accent:       #8B5CF6;
+  --accent-dim:   rgba(139,92,246,0.10);
+  --accent-ring:  rgba(139,92,246,0.25);
+  --accent-text:  #A78BFA;
+  --ok:           #34D399;
+  --ok-dim:       rgba(52,211,153,0.08);
+  --info:         #60A5FA;
+  --info-dim:     rgba(96,165,250,0.08);
+  --purple:       #C084FC;
+  --purple-dim:   rgba(192,132,252,0.08);
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  --shadow:       0 2px 6px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+  --topbar-bg:    var(--surface);
+  --sidebar-bg:   var(--surface);
+  --result-bg:    var(--surface);
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ═══════════════════════════════════════════════
+   APP SHELL
+   ═══════════════════════════════════════════════ */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border-2);
+  flex-shrink: 0;
+  z-index: 100;
+}
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+
+/* Light mode logo */
+.logo-light { display: flex; align-items: baseline; gap: 7px; }
+.logo-light-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+.logo-light-badge {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1.5px solid rgba(168,98,42,0.35);
+  border-radius: 3px;
+  padding: 1px 5px 1px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+/* Dark mode logo */
+.logo-dark { display: flex; align-items: center; gap: 8px; }
+.logo-dark-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+.logo-dark-name {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+
+[data-theme="light"] .logo-light { display: flex; }
+[data-theme="light"] .logo-dark  { display: none; }
+[data-theme="dark"]  .logo-light { display: none; }
+[data-theme="dark"]  .logo-dark  { display: flex; }
+
+/* Nav tabs */
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background 0.12s, color 0.12s;
+}
+.nav-tab.active {
+  background: var(--accent-dim);
+  color: var(--accent-text);
+}
+.nav-tab:hover:not(.active) { background: var(--surface-2); }
+
+/* Topbar right controls */
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.ctrl-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 7px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.ctrl-btn:hover { background: var(--surface-2); color: var(--ink); }
+.ctrl-btn.theme-btn { font-size: 15px; }
+.decimal-toggle {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 0 10px;
+  height: 32px;
+  border-radius: 7px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.decimal-toggle:hover { background: var(--surface-2); color: var(--ink); }
+.undo-redo { display: flex; border-radius: 7px; overflow: hidden; border: 1px solid var(--border-2); }
+.undo-redo .ctrl-btn { border: none; border-radius: 0; }
+.undo-redo .ctrl-btn:first-child { border-right: 1px solid var(--border-2); }
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-ring);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-text);
+  cursor: pointer;
+}
+
+/* ── BODY ── */
+.body {
+  display: grid;
+  grid-template-columns: 220px 1fr 240px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════════ */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 14px 0 24px;
+  gap: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+/* Light mode: serif group headings with color dots */
+.op-group { margin-bottom: 8px; }
+.op-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+[data-theme="light"] .op-group-label {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.op-group-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .op-group-dot { display: none; }
+
+.op-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 22px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.10s, color 0.10s;
+  position: relative;
+  white-space: nowrap;
+}
+.op-item:hover { background: var(--surface-2); color: var(--ink); }
+.op-item.active {
+  background: var(--accent-dim);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+/* Dark mode: left violet bar on active */
+[data-theme="dark"] .op-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 18px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+/* Light mode: left amber bar */
+[data-theme="light"] .op-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 20px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.op-badge {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+/* ── Sidebar divider ── */
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 14px;
+}
+
+/* Chain mode button */
+.chain-btn {
+  margin: 8px 12px 0;
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px dashed var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+.chain-btn:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-dim); }
+
+/* ═══════════════════════════════════════════════
+   WORKSPACE (CENTER)
+   ═══════════════════════════════════════════════ */
+.workspace {
+  padding: 24px 28px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+/* Section heading — serif in light, geometric in dark */
+.ws-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.ws-op-name {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+[data-theme="light"] .ws-op-name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+.ws-op-desc {
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.ws-op-tag {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent-text);
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="light"] .card { box-shadow: var(--shadow); }
+.card-body { padding: 18px; }
+
+/* Matrix size selector */
+.matrix-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.matrix-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+[data-theme="light"] .matrix-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.size-btn {
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.10s, color 0.10s, border-color 0.10s;
+}
+.size-btn.active { background: var(--accent-dim); color: var(--accent-text); border-color: var(--accent-ring); }
+
+/* Matrix grid */
+.matrix-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.matrix-bracket {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bracket {
+  font-size: 56px;
+  font-weight: 200;
+  color: var(--ink-2);
+  line-height: 1;
+  font-family: var(--font-mono);
+  margin-top: -2px;
+}
+.m-cell {
+  width: 48px; height: 36px;
+  border: 1px solid var(--border-2);
+  border-radius: 5px;
+  background: var(--bg-deep);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+  -moz-appearance: textfield;
+}
+.m-cell::-webkit-inner-spin-button,
+.m-cell::-webkit-outer-spin-button { -webkit-appearance: none; }
+.m-cell:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+[data-theme="dark"] .m-cell:focus {
+  box-shadow: 0 0 0 3px var(--accent-ring), 0 0 8px var(--accent-dim);
+}
+
+/* Action row */
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.btn {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.08s;
+  letter-spacing: -0.1px;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border: 1px solid var(--border-2);
+}
+.btn-secondary:hover { background: var(--bg-deep); color: var(--ink); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 12px;
+}
+.action-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--ink-2);
+}
+
+/* ═══════════════════════════════════════════════
+   RESULT PANEL (RIGHT)
+   ═══════════════════════════════════════════════ */
+.result-panel {
+  background: var(--result-bg);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.result-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.result-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+[data-theme="light"] .result-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.result-copy-btn {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  background: none;
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: color 0.10s, border-color 0.10s;
+}
+.result-copy-btn:hover { color: var(--accent-text); border-color: var(--accent-ring); }
+
+.result-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+/* Result matrix block */
+.result-block {
+  border-radius: 7px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+[data-theme="light"] .result-block {
+  border-left: 3px solid var(--accent);
+}
+[data-theme="dark"] .result-block {
+  border-left: 2px solid var(--accent);
+  box-shadow: 0 0 0 1px var(--border), inset 0 0 20px var(--accent-dim);
+}
+.result-mat {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 2.1;
+  color: var(--ink);
+  white-space: pre;
+}
+[data-theme="dark"] .result-mat { color: var(--ink); }
+.result-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.meta-item {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.meta-val {
+  font-family: var(--font-mono);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+/* Steps section */
+.steps-section { display: flex; flex-direction: column; gap: 0; }
+.steps-heading {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+[data-theme="light"] .steps-heading {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.step-item {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.step-item:last-child { border-bottom: none; }
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--accent-text);
+  min-width: 18px;
+  padding-top: 1px;
+  flex-shrink: 0;
+}
+[data-theme="light"] .step-num {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--accent);
+}
+.step-math {
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 11px;
+  color: var(--ink);
+}
+
+/* Equivalent statements notice */
+.equiv-notice {
+  border-radius: 7px;
+  padding: 10px 12px;
+  background: var(--ok-dim);
+  border: 1px solid rgba(58,107,74,0.2);
+  font-size: 11.5px;
+  color: var(--ok);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+[data-theme="dark"] .equiv-notice {
+  color: var(--ok);
+  border-color: rgba(52,211,153,0.2);
+  background: var(--ok-dim);
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR STYLING
+   ═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 10px; }
+
+/* ═══════════════════════════════════════════════
+   THEME TRANSITION
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after {
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+/* Don't animate these — causes jank */
+.m-cell, .btn, .nav-tab, .op-item, .ctrl-btn, .chain-btn {
+  transition: background 0.10s, color 0.10s, border-color 0.10s, box-shadow 0.10s, opacity 0.10s;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <!-- Light mode logo -->
+      <div class="logo-light">
+        <span class="logo-light-name">MA1522</span>
+        <span class="logo-light-badge">Studio</span>
+      </div>
+      <!-- Dark mode logo -->
+      <div class="logo-dark">
+        <div class="logo-dark-mark">∑</div>
+        <span class="logo-dark-name">MA1522</span>
+      </div>
+      <!-- Nav -->
+      <nav class="nav-tabs">
+        <button class="nav-tab active">Compute</button>
+        <button class="nav-tab">History</button>
+        <button class="nav-tab">Chain</button>
+        <button class="nav-tab">Equiv.</button>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <button class="decimal-toggle" title="Toggle decimal display">1/3 · 0.33</button>
+      <div class="undo-redo">
+        <button class="ctrl-btn" title="Undo">↩</button>
+        <button class="ctrl-btn" title="Redo">↪</button>
+      </div>
+      <button class="ctrl-btn theme-btn" id="themeToggle" title="Toggle theme">☀</button>
+      <div class="avatar">Z</div>
+    </div>
+  </header>
+
+  <!-- ══ BODY ══ -->
+  <div class="body">
+
+    <!-- ── SIDEBAR ── -->
+    <nav class="sidebar">
+      <div class="op-group">
+        <div class="op-group-label">
+          <span class="op-group-dot" style="background: var(--accent)"></span>
+          Row Operations
+        </div>
+        <div class="op-item active">
+          REF
+          <span class="op-badge" style="background: var(--accent-dim); color: var(--accent-text)">✓</span>
+        </div>
+        <div class="op-item">RREF</div>
+        <div class="op-item">Rank &amp; Nullity</div>
+        <div class="op-item">Determinant</div>
+        <div class="op-item">Inverse</div>
+      </div>
+
+      <div class="op-group">
+        <div class="op-group-label">
+          <span class="op-group-dot" style="background: var(--ok)"></span>
+          Decomposition
+        </div>
+        <div class="op-item">LU Factorisation</div>
+        <div class="op-item">QR Factorisation</div>
+        <div class="op-item">SVD</div>
+        <div class="op-item">Gram–Schmidt</div>
+      </div>
+
+      <div class="op-group">
+        <div class="op-group-label">
+          <span class="op-group-dot" style="background: var(--info)"></span>
+          Eigenanalysis
+        </div>
+        <div class="op-item">Eigenvalues</div>
+        <div class="op-item">Eigenvectors</div>
+        <div class="op-item">Diagonalise</div>
+        <div class="op-item">Orthog. Diag.</div>
+      </div>
+
+      <div class="op-group">
+        <div class="op-group-label">
+          <span class="op-group-dot" style="background: var(--purple)"></span>
+          Subspaces
+        </div>
+        <div class="op-item">Null Space</div>
+        <div class="op-item">Column Space</div>
+        <div class="op-item">Row Space</div>
+        <div class="op-item">Orthog. Complement</div>
+      </div>
+
+      <div class="op-group">
+        <div class="op-group-label">
+          <span class="op-group-dot" style="background: var(--ink-3)"></span>
+          Other
+        </div>
+        <div class="op-item">Markov Chain</div>
+        <div class="op-item">Least Squares</div>
+        <div class="op-item">Linear Systems</div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <button class="chain-btn">
+        <span style="font-size:14px">⇢</span>
+        Chain operations
+      </button>
+    </nav>
+
+    <!-- ── WORKSPACE ── -->
+    <main class="workspace">
+      <div class="ws-heading">
+        <span class="ws-op-name">Row Echelon Form</span>
+        <span class="ws-op-desc">Reduce A to upper triangular form</span>
+        <span class="ws-op-tag">REF</span>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="matrix-meta">
+            <span class="matrix-label">Matrix A</span>
+            <button class="size-btn active">3 × 3</button>
+            <button class="size-btn">3 × 4</button>
+            <button class="size-btn">4 × 4</button>
+            <button class="size-btn">n × m</button>
+          </div>
+
+          <div class="matrix-bracket">
+            <span class="bracket">[</span>
+            <div class="matrix-grid">
+              <input class="m-cell" type="number" value="2">
+              <input class="m-cell" type="number" value="1">
+              <input class="m-cell" type="number" value="-1">
+              <input class="m-cell" type="number" value="4">
+              <input class="m-cell" type="number" value="3">
+              <input class="m-cell" type="number" value="2">
+              <input class="m-cell" type="number" value="-2">
+              <input class="m-cell" type="number" value="0">
+              <input class="m-cell" type="number" value="5">
+            </div>
+            <span class="bracket">]</span>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary">Compute REF</button>
+            <button class="btn btn-secondary">Clear</button>
+            <button class="btn btn-ghost">Random</button>
+            <div class="action-hint">
+              <kbd>↵</kbd> to compute
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── RESULT PANEL ── -->
+    <aside class="result-panel">
+      <div class="result-header">
+        <span class="result-title">Result</span>
+        <button class="result-copy-btn">Copy LaTeX</button>
+      </div>
+
+      <div class="result-body">
+        <div class="result-block">
+          <div class="result-mat">⎡ 2   1  −1 ⎤
+⎢ 0   1   4 ⎥
+⎣ 0   0   8 ⎦</div>
+          <div class="result-meta">
+            <span class="meta-item">rank <span class="meta-val">3</span></span>
+            <span class="meta-item">det <span class="meta-val">16</span></span>
+            <span class="meta-item">nullity <span class="meta-val">0</span></span>
+          </div>
+        </div>
+
+        <div class="equiv-notice">
+          <span>✓</span>
+          <span>Full rank — matrix is <strong>invertible</strong></span>
+        </div>
+
+        <div class="steps-section">
+          <div class="steps-heading">Working</div>
+
+          <div class="step-item">
+            <span class="step-num">1.</span>
+            <span>
+              <span class="step-math">R₂ ← R₂ − 2R₁</span>
+              — eliminates col 1 entry in row 2
+            </span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2.</span>
+            <span>
+              <span class="step-math">R₃ ← R₃ + R₁</span>
+              — clears col 1 in row 3
+            </span>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3.</span>
+            <span>
+              <span class="step-math">R₃ ← R₃ − 2R₂</span>
+              — achieves upper triangular form
+            </span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /body -->
+</div><!-- /app -->
+
+<script>
+/* ── THEME SYSTEM ── */
+(function () {
+  const KEY = 'ma1522-theme';
+  const btn = document.getElementById('themeToggle');
+  const html = document.documentElement;
+
+  const icons = { light: '☀', dark: '☽' };
+
+  function apply(theme) {
+    html.setAttribute('data-theme', theme);
+    btn.textContent = theme === 'light' ? icons.dark : icons.light;
+    btn.title = theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+  }
+
+  // Determine initial theme
+  const stored = localStorage.getItem(KEY);
+  const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  apply(stored || preferred);
+
+  btn.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    localStorage.setItem(KEY, next);
+    apply(next);
+  });
+
+  // React to OS changes (only if no manual override)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+  });
+})();
+
+/* ── NAV TABS ── */
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+/* ── OP ITEMS ── */
+document.querySelectorAll('.op-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.op-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+/* ── SIZE BTNS ── */
+document.querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* ── KEYBOARD SHORTCUT ── */
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter') && !e.shiftKey) {
+    const focused = document.activeElement;
+    if (focused && focused.classList.contains('m-cell')) {
+      e.preventDefault();
+      document.querySelector('.btn-primary').click();
+    }
+  }
+});
+</script>
+</body>
+</html>
