@@ -104,30 +104,29 @@ The FastAPI backend exposes only `/api/v2/*` routes. Static frontend assets are 
 
 The production app is split into a static Vite frontend and a Python API backend.
 
-The Cloudflare deployment path publishes the frontend to Cloudflare Pages using Cloudflare's Git integration. A Worker can optionally proxy `/api/*` to the Python backend, but the symbolic FastAPI backend still needs a Python runtime at `BACKEND_ORIGIN`.
+The Cloudflare deployment path publishes the frontend to Cloudflare Workers using Workers Builds and Static Assets. The symbolic FastAPI backend still needs a Python runtime; it can be deployed later and connected through `VITE_API_BASE_URL` or an edge proxy.
 
-### Frontend: Cloudflare Pages
+### Frontend: Cloudflare Workers
 
-Create a Cloudflare Pages project from the Cloudflare dashboard using **Workers & Pages -> Create application -> Pages -> Connect to Git**. Connect the GitHub repository instead of creating a Direct Upload Pages project, because Cloudflare Pages project modes cannot be switched between Git integration and Direct Upload later.
+Create a Worker from the Cloudflare dashboard using **Workers & Pages -> Create application -> Import a repository**. Connect the GitHub repository and configure the Worker build:
 
 | Setting | Value |
 | --- | --- |
-| Framework preset | None |
 | Production branch | `main` |
-| Root directory | `frontend` |
+| Path | `frontend` |
 | Build command | `pnpm install --frozen-lockfile && pnpm build` |
-| Build output directory | `dist` |
+| Deploy command | `npx wrangler deploy` |
 | Node.js version | `22` |
 
-Configure these Cloudflare Pages environment variables:
+The frontend Worker config lives at `frontend/wrangler.jsonc`. It uploads `frontend/dist` as Workers Static Assets and uses `single-page-application` fallback routing for client-side routes.
+
+Configure these Cloudflare build environment variables:
 
 | Variable | Purpose |
 | --- | --- |
-| `VITE_API_BASE_URL` | Optional API origin. Leave empty when `/api/*` is served from the Pages domain |
+| `VITE_API_BASE_URL` | Optional API origin. Leave empty until the backend is deployed |
 
-The `frontend/public/_redirects` file configures SPA fallback routing, and `frontend/public/_headers` applies baseline security headers to static responses.
-
-If API requests are served through the same Pages domain, keep `VITE_API_BASE_URL` unset so the frontend calls `/api/v2/*` on the current origin. If the API is served from a separate origin, set `VITE_API_BASE_URL` to that origin in the Pages project.
+If `VITE_API_BASE_URL` is unset, the frontend calls `/api/v2/*` on the current origin. Once the API is deployed on a separate origin, set `VITE_API_BASE_URL` to that origin in the Worker build settings.
 
 ### API: FastAPI Host
 
