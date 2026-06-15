@@ -114,7 +114,7 @@ Create a Worker from the Cloudflare dashboard using **Workers & Pages -> Create 
 | --- | --- |
 | Production branch | `main` |
 | Path | `frontend` |
-| Build command | `pnpm install --frozen-lockfile && pnpm build` |
+| Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy` |
 | Node.js version | `22` |
 
