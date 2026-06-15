@@ -146,10 +146,10 @@ class TestMatrixMultiplication:
 
     @pytest.mark.parametrize("n", [1, 2, 3])
     def test_identity_n_matmul(self, n):
-        I = Matrix.eye(n)
+        identity = Matrix.eye(n)
         A = Matrix.create_rand_matrix(n, n, seed=n)
-        assert A @ I == A
-        assert I @ A == A
+        assert A @ identity == A
+        assert identity @ A == A
 
 
 # ---------------------------------------------------------------------------

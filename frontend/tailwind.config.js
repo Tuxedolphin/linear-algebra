@@ -14,6 +14,7 @@ export default {
         rule: 'var(--color-border-2)',
         softRule: 'var(--color-border)',
         accent: 'var(--color-accent)',
+        action: 'var(--color-action)',
         accentBg: 'var(--color-accent-bg)',
         accentRing: 'var(--color-accent-ring)',
         ok: 'var(--color-ok)',

@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "linear-algebra-api-proxy",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-15",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

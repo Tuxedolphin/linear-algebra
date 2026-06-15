@@ -4,7 +4,7 @@ column_constraints, evaluate_cases."""
 import pytest
 import sympy as sym
 
-from ma1522 import Matrix, PartGen
+from ma1522 import Matrix
 from ma1522.custom_types import PLU, RREF
 
 
@@ -225,14 +225,14 @@ class TestAdj:
     def test_2x2_adj_property(self, mat_2x2):
         adj = mat_2x2.adj()
         det = mat_2x2.det()
-        I = Matrix.eye(2)
-        assert (mat_2x2 @ adj - det * I).norm() == 0
+        identity = Matrix.eye(2)
+        assert (mat_2x2 @ adj - det * identity).norm() == 0
 
     def test_3x3_adj_property(self, mat_3x3):
         adj = mat_3x3.adj()
         det = mat_3x3.det()
-        I = Matrix.eye(3)
-        assert sym.simplify((mat_3x3 @ adj - det * I).norm()) == 0
+        identity = Matrix.eye(3)
+        assert sym.simplify((mat_3x3 @ adj - det * identity).norm()) == 0
 
 
 # ---------------------------------------------------------------------------

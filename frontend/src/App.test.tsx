@@ -17,22 +17,22 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: 'Compute' })).toBeInTheDocument()
   })
 
-  it('renders the operation listbox with the default selection', () => {
+  it('renders the operation list with the current selection', () => {
     render(<App />)
-    const listbox = screen.getByRole('listbox', { name: 'Operations' })
-    const selected = within(listbox).getAllByRole('option', { selected: true })
-    expect(selected).toHaveLength(1)
+    const list = screen.getByRole('list', { name: 'Operations' })
+    const current = within(list).getAllByRole('button', { current: true })
+    expect(current).toHaveLength(1)
   })
 
-  it('removes the active descendant when search filters out the active operation', () => {
+  it('removes the current marker when search filters out the active operation', () => {
     render(<App />)
-    const listbox = screen.getByRole('listbox', { name: 'Operations' })
+    const list = screen.getByRole('list', { name: 'Operations' })
 
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search operations' }), {
       target: { value: 'eigen' },
     })
 
-    expect(listbox).not.toHaveAttribute('aria-activedescendant')
+    expect(within(list).queryByRole('button', { current: true })).not.toBeInTheDocument()
   })
 
   it('renders an editable matrix grid for Matrix A', () => {

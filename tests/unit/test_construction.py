@@ -9,7 +9,6 @@ Covers:
 
 import pytest
 import sympy as sym
-from sympy.matrices.exceptions import ShapeError
 
 from ma1522 import Matrix
 from ma1522.custom_types import Shape

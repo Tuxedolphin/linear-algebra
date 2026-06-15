@@ -1,4 +1,3 @@
-import pytest
 import sympy as sym
 from ma1522 import Matrix, sympy_commands
 

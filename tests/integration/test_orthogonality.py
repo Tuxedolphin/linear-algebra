@@ -257,7 +257,7 @@ class TestQRDecomposition:
     def test_q_has_orthonormal_columns(self, mat_2x2, identity_2):
         qr = mat_2x2.QRdecomposition()
         assert isinstance(qr, QR)
-        Q, R = qr.Q, qr.R
+        Q = qr.Q
         diff = sym.simplify((Q.T @ Q - identity_2).norm())
         assert diff == 0
 

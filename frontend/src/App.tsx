@@ -36,7 +36,7 @@ function App() {
     <main className="flex min-h-[100dvh] flex-col bg-bg text-ink lg:h-[100dvh] lg:overflow-hidden">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-rule bg-panel px-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-[26px] w-[26px] items-center justify-center rounded-md bg-accent font-mono text-[13px] font-semibold text-white">
+          <div className="flex h-[26px] w-[26px] items-center justify-center rounded-md bg-action font-mono text-[13px] font-semibold text-white">
             Σ
           </div>
           <span className="text-[15px] font-bold leading-none text-ink">MA1522</span>

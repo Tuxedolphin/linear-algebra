@@ -190,9 +190,9 @@ class TestPLU:
         L = Matrix.eye(2)
         U = Matrix([[1, 2], [0, 3]])
         plu = PLU(P, L, U)
-        p, l, u = plu
+        p, lower, u = plu
         assert p == P
-        assert l == L
+        assert lower == L
         assert u == U
 
 
