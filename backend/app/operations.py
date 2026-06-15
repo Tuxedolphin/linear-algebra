@@ -200,19 +200,18 @@ def _inv(request: ComputeRequest) -> ComputeResponse:
     blocks: list[ResultBlock] = []
     steps: list[Step] = []
 
-    if full_col and full_row:
-        result, raw_steps = capture(lambda: matrix.inverse(option="both", verbosity=1))
-        blocks.append(_matrix_block("A^{-1}", _maybe_decimal_matrix(result, request.output), "Left and right inverse"))
+    def add(option: str, label: str, note: str | None = None) -> None:
+        result, raw_steps = capture(lambda: matrix.inverse(option=option, verbosity=1))
+        blocks.append(_matrix_block(label, _maybe_decimal_matrix(result, request.output), note))
         steps.extend(parse_steps(raw_steps))
+
+    if full_col and full_row:
+        add("both", "A^{-1}", "Left and right inverse")
     else:
         if full_col:
-            result, raw_steps = capture(lambda: matrix.inverse(option="left", verbosity=1))
-            blocks.append(_matrix_block("Left inverse", _maybe_decimal_matrix(result, request.output)))
-            steps.extend(parse_steps(raw_steps))
+            add("left", "Left inverse")
         if full_row:
-            result, raw_steps = capture(lambda: matrix.inverse(option="right", verbosity=1))
-            blocks.append(_matrix_block("Right inverse", _maybe_decimal_matrix(result, request.output)))
-            steps.extend(parse_steps(raw_steps))
+            add("right", "Right inverse")
         if not blocks:
             blocks.append(ScalarBlock(label="Inverse", latex="\\text{No inverse exists}"))
 
@@ -248,8 +247,9 @@ def _rank(request: ComputeRequest) -> ComputeResponse:
 # (lambda*I - A), its RREF, and the resulting eigenvectors. The printing happens
 # before diagonalize may raise (non-diagonalizable), so safe_capture keeps it.
 def _eigen_steps(matrix: Matrix) -> list[Step]:
+    # parse_steps already numbers its output 1..N, so no _renumber is needed.
     raw = safe_capture(lambda: matrix.diagonalize(verbosity=1))
-    return _renumber(parse_steps(raw))
+    return parse_steps(raw)
 
 
 def _eigenvals(request: ComputeRequest) -> ComputeResponse:
@@ -356,28 +356,41 @@ def _extend_basis(request: ComputeRequest) -> ComputeResponse:
 def _solve(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
     rhs = _rhs_or_zero(request, matrix.rows)
-    raw_steps = ""
-    try:
-        solutions, raw_steps = capture(lambda: matrix.solve(rhs, verbosity=1))
-    except Exception:
-        solutions = []
+    # solve() prints its augmented-RREF working before it may raise on an
+    # inconsistent system, so capture the working either way (it explains *why*
+    # there is no solution) and keep whatever solution vectors were found.
+    solutions: list[sym.MatrixBase] = []
+    raw_steps = safe_capture(lambda: solutions.extend(matrix.solve(rhs, verbosity=1)))
+    steps = parse_steps(raw_steps)
     if not solutions:
-        return _blocks_response(request, [ScalarBlock(label="Solution", latex="\\text{No solution}")])
-    return _blocks_response(
-        request,
-        [_matrix_block("x", _maybe_decimal_matrix(solutions[0], request.output))],
-        parse_steps(raw_steps),
-    )
+        return _blocks_response(
+            request, [ScalarBlock(label="Solution", latex="\\text{No solution}")], steps
+        )
+    if len(solutions) == 1:
+        blocks: list[ResultBlock] = [
+            _matrix_block("x", _maybe_decimal_matrix(solutions[0], request.output))
+        ]
+    else:
+        blocks = [
+            _matrix_block(f"x_{index}", _maybe_decimal_matrix(solution, request.output))
+            for index, solution in enumerate(solutions, start=1)
+        ]
+    return _blocks_response(request, blocks, steps)
+
+
+def _least_squares_solution(matrix: Matrix, rhs: Matrix) -> tuple[sym.MatrixBase, str]:
+    """Least-squares solution x_hat with its working, falling back to the
+    pseudo-inverse when the verbose solver cannot index a result."""
+    try:
+        return capture(lambda: matrix.solve_least_squares(rhs, verbosity=1))
+    except (IndexError, KeyError):
+        return matrix.pinv() @ rhs, ""
 
 
 def _least_squares(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
     rhs = _rhs_or_zero(request, matrix.rows)
-    try:
-        result, raw_steps = capture(lambda: matrix.solve_least_squares(rhs, verbosity=1))
-    except (IndexError, KeyError):
-        result = matrix.pinv() @ rhs
-        raw_steps = ""
+    result, raw_steps = _least_squares_solution(matrix, rhs)
     return _blocks_response(
         request,
         [_matrix_block("x_hat", _maybe_decimal_matrix(result, request.output))],
@@ -388,11 +401,7 @@ def _least_squares(request: ComputeRequest) -> ComputeResponse:
 def _projection(request: ComputeRequest) -> ComputeResponse:
     matrix = _parse_a(request)
     rhs = _rhs_or_zero(request, matrix.rows)
-    try:
-        x_hat, raw_steps = capture(lambda: matrix.solve_least_squares(rhs, verbosity=1))
-    except (IndexError, KeyError):
-        x_hat = matrix.pinv() @ rhs
-        raw_steps = ""
+    x_hat, raw_steps = _least_squares_solution(matrix, rhs)
     projection = matrix @ x_hat
     return _blocks_response(
         request,
@@ -449,26 +458,29 @@ def _find_cases(request: ComputeRequest) -> ComputeResponse:
     return _blocks_response(request, [ScalarBlock(label="Cases", latex=latex)])
 
 
+_MOD_LABEL: dict[str, Callable[[str], str]] = {
+    "none": lambda name: name,
+    "T": lambda name: f"{name}^{{T}}",
+    "inv": lambda name: f"{name}^{{-1}}",
+    "inv_T": lambda name: f"\\left({name}^{{-1}}\\right)^{{T}}",
+}
+
+_MOD_APPLY: dict[str, Callable[[sym.MatrixBase], sym.MatrixBase]] = {
+    "none": lambda matrix: matrix,
+    "T": lambda matrix: matrix.T,
+    "inv": lambda matrix: matrix.inv(),
+    "inv_T": lambda matrix: matrix.inv().T,
+}
+
+
 def _operand_label(name: str, mod: str) -> str:
-    if mod == "T":
-        return f"{name}^{{T}}"
-    if mod == "inv":
-        return f"{name}^{{-1}}"
-    if mod == "inv_T":
-        return f"\\left({name}^{{-1}}\\right)^{{T}}"
-    return name
+    return _MOD_LABEL.get(mod, _MOD_LABEL["none"])(name)
 
 
 def _apply_mod(matrix: sym.MatrixBase, mod: str) -> sym.MatrixBase:
-    if mod == "none":
-        return matrix
-    if mod == "T":
-        return matrix.T
-    if mod == "inv":
-        return matrix.inv()
-    if mod == "inv_T":
-        return matrix.inv().T
-    raise ValueError(f"Unknown modifier '{mod}'. Must be one of: none, T, inv, inv_T")
+    if mod not in _MOD_APPLY:
+        raise ValueError(f"Unknown modifier '{mod}'. Must be one of: none, T, inv, inv_T")
+    return _MOD_APPLY[mod](matrix)
 
 
 def _chain_multiply(request: ComputeRequest) -> ComputeResponse:
@@ -562,8 +574,8 @@ def _markov_kstep(request: ComputeRequest) -> ComputeResponse:
     return _blocks_response(
         request,
         [
-            _matrix_block(f"x_{k}", _maybe_decimal_matrix(distribution, request.output)),
             _matrix_block(f"A^{k}", _maybe_decimal_matrix(matrix_power, request.output)),
+            _matrix_block(f"x_{k}", _maybe_decimal_matrix(distribution, request.output)),
         ],
         steps,
     )

@@ -39,7 +39,7 @@ def _error_response(
 
 @router.post("/compute")
 async def compute(request: ComputeRequest):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     try:
         response = await asyncio.wait_for(
             loop.run_in_executor(_executor, run_operation, request),

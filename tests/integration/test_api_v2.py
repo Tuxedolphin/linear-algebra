@@ -138,6 +138,48 @@ def test_qr_returns_multiple_matrix_blocks():
     assert all(block.kind == "matrix" for block in resp.blocks)
 
 
+def test_changed_rows_highlights_both_rows_of_a_swap():
+    from app.steps import _changed_rows_from_description
+
+    assert _changed_rows_from_description(r"R_1 \leftrightarrow R_2") == [0, 1]
+    # A scale/add operation only changes its arrow target.
+    assert _changed_rows_from_description(r"R_2 - \left(3\right)R_1 \rightarrow R_2") == [1]
+    assert _changed_rows_from_description("no rows here") is None
+
+
+def test_solve_inconsistent_system_keeps_working_steps():
+    from app.operations import run_operation
+    from app.schemas import ComputeRequest
+
+    # x + y = 1 and x + y = 2 is inconsistent: the library prints its RREF
+    # working before raising, and that working must still reach the response.
+    resp = run_operation(
+        ComputeRequest(operation="solve", matrixA="[1 1; 1 1]", rhs="[1; 2]", output="exact")
+    )
+
+    assert resp.blocks[0].label == "Solution"
+    assert "No solution" in resp.blocks[0].latex
+    assert len(resp.steps) >= 1
+
+
+def test_markov_kstep_blocks_follow_step_order():
+    from app.operations import run_operation
+    from app.schemas import ComputeRequest
+
+    resp = run_operation(
+        ComputeRequest(
+            operation="markov_kstep",
+            matrixA="[1/2 1/2; 1/2 1/2]",
+            rhs="[1; 0]",
+            k=2,
+            output="exact",
+        )
+    )
+
+    # A^k is derived first in the steps, so it must be the first result block.
+    assert [block.label for block in resp.blocks] == ["A^2", "x_2"]
+
+
 def test_compute_v2_endpoint_returns_structured_response():
     from fastapi.testclient import TestClient
     from app.main import app

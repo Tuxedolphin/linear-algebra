@@ -12,7 +12,9 @@ from app.schemas import Step
 
 _INLINE_MATH_RE = re.compile(r"^\\\((.*)\\\)$", re.DOTALL)
 _DISPLAY_MATH_RE = re.compile(r"^\\\[(.*)\\\]$", re.DOTALL)
-_TARGET_ROW_RE = re.compile(r"R_\{?(\d+)\}?\s*$")
+_ROW_RE = re.compile(r"R_\{?(\d+)\}?")
+_SWAP_RE = re.compile(r"R_\{?(\d+)\}?\s*\\leftrightarrow\s*R_\{?(\d+)\}?")
+_TARGET_RE = re.compile(r"\\rightarrow\s*R_\{?(\d+)\}?")
 
 
 def capture(fn: Callable[[], Any]) -> tuple[Any, str]:
@@ -120,9 +122,23 @@ def _strip_display_math(block: str) -> str:
 
 
 def _changed_rows_from_description(description: str | None) -> list[int] | None:
+    """Rows a row-operation description touches, as 0-based indices.
+
+    A swap (``R_i \\leftrightarrow R_j``) changes both rows; a scale or add
+    operation changes only the arrow target (``... \\rightarrow R_i``). Falls
+    back to the last row mentioned for descriptions without an explicit arrow.
+    """
     if not description:
         return None
-    match = _TARGET_ROW_RE.search(description.strip())
-    if not match:
-        return None
-    return [int(match.group(1)) - 1]
+    text = description.strip()
+
+    swap = _SWAP_RE.search(text)
+    if swap:
+        return [int(swap.group(1)) - 1, int(swap.group(2)) - 1]
+
+    rows: list[int] = []
+    for raw in _TARGET_RE.findall(text) or _ROW_RE.findall(text)[-1:]:
+        row = int(raw) - 1
+        if row not in rows:
+            rows.append(row)
+    return rows or None
