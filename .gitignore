@@ -72,6 +72,8 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+.wrangler/
+**/.wrangler/
 .npm/
 package-lock.json
 yarn.lock
