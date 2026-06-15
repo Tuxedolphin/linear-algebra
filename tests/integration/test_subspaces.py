@@ -245,9 +245,9 @@ class TestTransitionMatrix:
         assert diff == 0
 
     def test_identity_to_scaled(self):
-        I = Matrix.eye(2)
+        identity = Matrix.eye(2)
         S = 2 * Matrix.eye(2)
-        P = I.transition_matrix(to=S, verbosity=0)
+        P = identity.transition_matrix(to=S, verbosity=0)
         # S @ P = I  →  P = S^{-1} = (1/2)I (diagonal so P @ S = I too)
         expected = sym.Rational(1, 2) * Matrix.eye(2)
         diff = sym.simplify((P - expected).norm())

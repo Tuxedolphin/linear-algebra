@@ -3,12 +3,11 @@
 Each test is tied to a specific fix so regressions are caught immediately.
 """
 
-import pytest
 import sympy as sym
 import warnings
 
 from ma1522 import Matrix
-from ma1522.custom_types import QR, SVD, NumSVD
+from ma1522.custom_types import SVD, NumSVD
 
 
 # ---------------------------------------------------------------------------

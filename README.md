@@ -100,6 +100,59 @@ Open the Vite URL shown in the terminal, usually [http://localhost:5173](http://
 
 The FastAPI backend exposes only `/api/v2/*` routes. Static frontend assets are served by Vite in development and by the frontend host in production.
 
+## Deployment
+
+The production app is split into a static Vite frontend and a Python API backend.
+
+### Frontend: Cloudflare Pages
+
+Deploy `frontend/` as a Cloudflare Pages project:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `pnpm install --frozen-lockfile && pnpm build` |
+| Build output directory | `dist` |
+| Node.js version | `22` |
+
+The `frontend/public/_redirects` file configures SPA fallback routing, and `frontend/public/_headers` applies baseline security headers to static responses.
+
+If API requests are served through the same Pages domain, keep `VITE_API_BASE_URL` unset so the frontend calls `/api/v2/*` on the current origin. If the API is served from a separate origin, set `VITE_API_BASE_URL` to that origin before building the frontend.
+
+### API: FastAPI Host
+
+Deploy the backend on a Python host that can run:
+
+```bash
+uv run uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+```
+
+When the browser calls the backend directly from another origin, set `ALLOWED_ORIGINS` to a comma-separated list of exact frontend origins:
+
+```bash
+ALLOWED_ORIGINS=https://linear-algebra.example.com
+```
+
+When all browser traffic reaches the API through a same-origin edge proxy, `ALLOWED_ORIGINS` can stay unset.
+
+### Optional API Edge Proxy: Cloudflare Worker
+
+`deploy/cloudflare-api-proxy/` contains a small Worker that proxies `/api/*` to the FastAPI host.
+
+Configure these Worker environment variables in Cloudflare:
+
+| Variable | Purpose |
+| --- | --- |
+| `BACKEND_ORIGIN` | HTTPS origin for the FastAPI host, for example `https://linear-algebra-api.example.com` |
+| `ALLOWED_ORIGIN` | Exact browser origin allowed for CORS preflight responses |
+
+Deploy it with Wrangler:
+
+```bash
+npx wrangler deploy --config deploy/cloudflare-api-proxy/wrangler.jsonc
+```
+
+Route `/api/*` traffic for the frontend domain to this Worker, or set `VITE_API_BASE_URL` to the Worker origin.
+
 ## Usage
 
 ### Entering A Matrix

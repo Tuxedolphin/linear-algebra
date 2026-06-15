@@ -32,10 +32,10 @@ def _reconstruction_norm(svd: SVD, A: Matrix) -> float:
     return float(diff.norm())
 
 
-def _orthogonality_norm(M: Matrix, I: Matrix) -> float:
+def _orthogonality_norm(M: Matrix, identity: Matrix) -> float:
     """Numerical Frobenius norm of M^T M - I."""
     M_num = M.evalf()
-    diff = M_num.T @ M_num - I.evalf()
+    diff = M_num.T @ M_num - identity.evalf()
     return float(diff.norm())
 
 

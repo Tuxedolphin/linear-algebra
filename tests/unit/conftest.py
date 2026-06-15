@@ -4,7 +4,6 @@ import pytest
 import sympy as sym
 
 from ma1522 import Matrix
-from ma1522.custom_types import ScalarFactor, PartGen
 
 
 @pytest.fixture

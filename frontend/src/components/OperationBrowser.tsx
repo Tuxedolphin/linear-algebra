@@ -32,7 +32,6 @@ export function OperationBrowser() {
     }
     return [...groups.entries()]
   }, [filtered])
-  const activeInFiltered = filtered.some((operation) => operation.id === active)
 
   // `/` from anywhere focuses search (unless already typing in a field).
   useEffect(() => {
@@ -98,10 +97,7 @@ export function OperationBrowser() {
         />
       </div>
       <ul
-        role="listbox"
         aria-label="Operations"
-        aria-activedescendant={activeInFiltered ? `op-${active}` : undefined}
-        tabIndex={0}
         onKeyDown={handleListKeyDown}
         className="max-h-[40vh] min-h-0 flex-1 overflow-y-auto pb-5 pt-1 lg:max-h-none"
       >
@@ -109,33 +105,37 @@ export function OperationBrowser() {
           <li className="px-4 py-6 text-center text-[12px] text-faint">No matches</li>
         ) : null}
         {grouped.map(([group, groupOperations]) => (
-          <li key={group} role="group" aria-label={group}>
+          <li key={group}>
             <div
               aria-hidden
               className="px-3 pb-1 pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-faint"
             >
               {group}
             </div>
-            <ul role="presentation">
+            <ul>
               {groupOperations.map((operation) => {
                 const isActive = operation.id === active
                 return (
-                  <li
-                    key={operation.id}
-                    id={`op-${operation.id}`}
-                    role="option"
-                    aria-selected={isActive}
-                    onClick={() => setOperation(operation.id)}
-                    className={`relative flex min-h-[34px] cursor-pointer items-center px-4 text-[12.5px] transition-colors active:bg-surface2 lg:min-h-[30px] ${
-                      isActive
-                        ? 'bg-accentBg font-medium text-ink'
-                        : 'text-graphite hover:bg-surface2 hover:text-ink'
-                    }`}
-                  >
-                    {isActive ? (
-                      <span aria-hidden className="absolute left-0 h-4 w-[2.5px] rounded-r bg-accent" />
-                    ) : null}
-                    <span className="truncate">{operation.label}</span>
+                  <li key={operation.id}>
+                    <button
+                      id={`op-${operation.id}`}
+                      type="button"
+                      aria-current={isActive ? 'true' : undefined}
+                      onClick={() => setOperation(operation.id)}
+                      className={`relative flex min-h-[34px] w-full cursor-pointer items-center px-4 text-left text-[12.5px] transition-colors active:bg-surface2 lg:min-h-[30px] ${
+                        isActive
+                          ? 'bg-accentBg font-medium text-ink'
+                          : 'text-graphite hover:bg-surface2 hover:text-ink'
+                      }`}
+                    >
+                      {isActive ? (
+                        <span
+                          aria-hidden
+                          className="absolute left-0 h-4 w-[2.5px] rounded-r bg-action"
+                        />
+                      ) : null}
+                      <span className="truncate">{operation.label}</span>
+                    </button>
                   </li>
                 )
               })}

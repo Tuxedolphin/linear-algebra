@@ -5,10 +5,9 @@ Covers branches and inputs that existing tests miss entirely.
 
 import pytest
 import sympy as sym
-import warnings
 
 from ma1522 import Matrix
-from ma1522.custom_types import QR, PartGen
+from ma1522.custom_types import QR
 
 
 # ---------------------------------------------------------------------------

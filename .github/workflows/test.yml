@@ -60,7 +60,7 @@ jobs:
           uv sync --python 3.13
 
       - name: Run ruff
-        run: uv run --python 3.13 ruff check backend
+        run: uv run --python 3.13 ruff check backend tests
 
   coverage:
     name: Backend coverage

@@ -1,6 +1,5 @@
 """Integration tests for linear transformations: standard_matrix."""
 
-import pytest
 import sympy as sym
 
 from ma1522 import Matrix, PartGen
@@ -50,10 +49,10 @@ class TestStandardMatrix:
 
     def test_identity_transformation(self):
         """T @ I == I (identity maps to itself)."""
-        I = Matrix.eye(3)
-        sol = Matrix.standard_matrix(I, I)
+        identity = Matrix.eye(3)
+        sol = Matrix.standard_matrix(identity, identity)
         T = sol[0]
-        diff = sym.simplify((T - I).norm())
+        diff = sym.simplify((T - identity).norm())
         assert diff == 0
 
     def test_standard_basis_columns_match(self):
