@@ -1,5 +1,5 @@
 const API_PREFIX = '/api/'
-const ALLOWED_METHODS = new Set(['POST', 'OPTIONS'])
+const ALLOWED_METHODS = new Set(['GET', 'POST', 'OPTIONS'])
 
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin')
@@ -11,7 +11,7 @@ function corsHeaders(request, env) {
 
   return {
     'Access-Control-Allow-Origin': origin,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     Vary: 'Origin',
   }
@@ -55,7 +55,7 @@ export default {
         {
           status: 405,
           headers: {
-            Allow: 'POST, OPTIONS',
+            Allow: 'GET, POST, OPTIONS',
             ...cors,
           },
         },
