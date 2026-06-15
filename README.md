@@ -104,15 +104,33 @@ The FastAPI backend exposes only `/api/v2/*` routes. Static frontend assets are 
 
 The production app is split into a static Vite frontend and a Python API backend.
 
+The Cloudflare deployment path publishes the frontend to Cloudflare Pages and, optionally, publishes a Worker that proxies `/api/*` to the Python backend. The symbolic FastAPI backend still needs a Python runtime at `BACKEND_ORIGIN`.
+
 ### Frontend: Cloudflare Pages
 
-Deploy `frontend/` as a Cloudflare Pages project:
+Deploy `frontend/` as a Cloudflare Pages project. The repository includes `.github/workflows/deploy-cloudflare.yml`, which builds the Vite app and uploads `frontend/dist` to Cloudflare Pages on pushes to `main`.
 
 | Setting | Value |
 | --- | --- |
 | Build command | `pnpm install --frozen-lockfile && pnpm build` |
 | Build output directory | `dist` |
 | Node.js version | `22` |
+
+Configure these GitHub secrets:
+
+| Secret | Purpose |
+| --- | --- |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account that owns the Pages project and Worker |
+| `CLOUDFLARE_API_TOKEN` | API token with permission to deploy Pages and Workers |
+
+Configure these GitHub variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `CLOUDFLARE_PAGES_PROJECT_NAME` | Cloudflare Pages project name |
+| `VITE_API_BASE_URL` | Optional API origin. Leave empty when `/api/*` is served from the Pages domain |
+| `CLOUDFLARE_WORKER_BACKEND_ORIGIN` | Optional FastAPI origin for the Worker proxy, for example `https://linear-algebra-api.example.com` |
+| `CLOUDFLARE_WORKER_ALLOWED_ORIGIN` | Optional browser origin allowed by the Worker proxy, for example `https://linear-algebra.example.com` |
 
 The `frontend/public/_redirects` file configures SPA fallback routing, and `frontend/public/_headers` applies baseline security headers to static responses.
 
@@ -164,7 +182,7 @@ Deploy it with Wrangler:
 npx wrangler deploy --config deploy/cloudflare-api-proxy/wrangler.jsonc
 ```
 
-Route `/api/*` traffic for the frontend domain to this Worker, or set `VITE_API_BASE_URL` to the Worker origin.
+The Cloudflare deploy workflow also deploys this Worker when both `CLOUDFLARE_WORKER_BACKEND_ORIGIN` and `CLOUDFLARE_WORKER_ALLOWED_ORIGIN` are set. Route `/api/*` traffic for the frontend domain to this Worker, or set `VITE_API_BASE_URL` to the Worker origin.
 
 ## Usage
 
