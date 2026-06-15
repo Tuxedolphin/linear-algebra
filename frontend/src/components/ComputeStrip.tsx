@@ -50,12 +50,16 @@ export function ComputeStrip() {
       </div>
       <button
         type="button"
+        aria-label="Compute"
         onClick={() => void runCompute()}
         disabled={isComputing}
         className="flex h-9 flex-1 items-center justify-center gap-2 rounded-md bg-accent px-4 text-[13px] font-semibold text-white transition-transform active:translate-y-px disabled:cursor-wait disabled:opacity-65"
       >
         {isComputing ? 'Computing…' : 'Compute'}
-        <kbd className="rounded bg-white/20 px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wide">
+        <kbd
+          aria-hidden="true"
+          className="rounded bg-white/20 px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wide"
+        >
           ⌘↵
         </kbd>
       </button>

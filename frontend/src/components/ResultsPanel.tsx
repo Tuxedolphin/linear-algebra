@@ -5,11 +5,12 @@ import { OutputToggle } from './OutputToggle'
 import type { MatrixBlock, ResultBlock, VectorListBlock } from '../lib/types'
 import { useCalculatorStore } from '../store/calculator'
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ label, text }: { label: string; text: string }) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
   return (
     <button
       type="button"
+      aria-label={`Copy ${label}`}
       onClick={() => {
         const fail = () => {
           setState('failed')
@@ -43,9 +44,10 @@ function MatrixResult({ block }: { block: MatrixBlock }) {
           {block.note ? <p className="mt-1 text-xs leading-5 text-graphite">{block.note}</p> : null}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          <CopyButton text={block.raw} />
+          <CopyButton label={block.label} text={block.raw} />
           <button
             type="button"
+            aria-label={`Load ${block.label} into Matrix A`}
             onClick={() => {
               sendBlockToMatrixA(block.raw)
               setLoaded(true)
