@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Switch from '@radix-ui/react-switch'
 
 import { HistoryDrawer } from './components/HistoryDrawer'
@@ -6,7 +6,7 @@ import { InputPane } from './components/InputPane'
 import { OperationBrowser } from './components/OperationBrowser'
 import { ResultsPanel } from './components/ResultsPanel'
 import { StepsPanel } from './components/StepsPanel'
-import { operations } from './data/operations'
+import { defaultOperation, operationById } from './data/operations'
 import { useCalculatorStore } from './store/calculator'
 
 function App() {
@@ -15,10 +15,7 @@ function App() {
   const setTheme = useCalculatorStore((state) => state.setTheme)
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
 
-  const operation = useMemo(
-    () => operations.find((item) => item.id === operationId) ?? operations[0],
-    [operationId],
-  )
+  const operation = operationById.get(operationId) ?? defaultOperation
 
   useEffect(() => {
     const root = document.documentElement

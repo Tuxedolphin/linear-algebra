@@ -84,7 +84,7 @@ These are the remaining tasks in rough priority order.
 
 ### 2. Accessibility audit
 
-- [ ] **AccessLint gate** — run `mcp__plugin_accesslint_accesslint__audit_live` against both light and dark themes; fix any failures before merge. The `accesslint` MCP plugin is already available in this Claude Code session.
+- [ ] **AccessLint gate** — run a live AccessLint audit against both light and dark themes in an environment where the AccessLint MCP is exposed; fix any failures before merge.
 
 ### 3. Retire the legacy GUI
 

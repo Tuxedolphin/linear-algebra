@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 
 import { equivalent } from '../lib/api'
@@ -14,27 +14,37 @@ export function EquivalentDialog() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setLoading] = useState(false)
 
-  async function loadEquivalent(nextOpen: boolean) {
-    setOpen(nextOpen)
-    // Refetch whenever the dialog opens for a matrix we haven't loaded yet,
-    // so the statements never go stale after Matrix A changes.
-    if (!nextOpen || isLoading || loadedFor === matrixA) return
+  useEffect(() => {
+    if (!open || loadedFor === matrixA) return
+
+    let cancelled = false
+    const requestedMatrix = matrixA
+
     setLoading(true)
+    setData(null)
     setError(null)
-    try {
-      const response = await equivalent(matrixA)
-      setData(response)
-      setLoadedFor(matrixA)
-    } catch (err) {
-      setData(null)
-      setError(err instanceof Error ? err.message : 'Unable to load equivalent statements.')
-    } finally {
-      setLoading(false)
+
+    equivalent(requestedMatrix)
+      .then((response) => {
+        if (cancelled) return
+        setData(response)
+        setLoadedFor(requestedMatrix)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        setError(err instanceof Error ? err.message : 'Unable to load equivalent statements.')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
     }
-  }
+  }, [loadedFor, matrixA, open])
 
   return (
-    <Dialog.Root open={open} onOpenChange={loadEquivalent}>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button
           type="button"

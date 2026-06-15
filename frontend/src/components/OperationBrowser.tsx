@@ -23,10 +23,16 @@ export function OperationBrowser() {
   const grouped = useMemo(() => {
     const groups = new Map<string, typeof operations>()
     for (const operation of filtered) {
-      groups.set(operation.group, [...(groups.get(operation.group) ?? []), operation])
+      const groupOperations = groups.get(operation.group)
+      if (groupOperations) {
+        groupOperations.push(operation)
+      } else {
+        groups.set(operation.group, [operation])
+      }
     }
     return [...groups.entries()]
   }, [filtered])
+  const activeInFiltered = filtered.some((operation) => operation.id === active)
 
   // `/` from anywhere focuses search (unless already typing in a field).
   useEffect(() => {
@@ -52,7 +58,8 @@ export function OperationBrowser() {
   function moveSelection(delta: number) {
     if (filtered.length === 0) return
     const index = filtered.findIndex((operation) => operation.id === active)
-    const next = Math.min(filtered.length - 1, Math.max(0, (index < 0 ? 0 : index) + delta))
+    const current = index < 0 ? (delta > 0 ? -1 : filtered.length) : index
+    const next = Math.min(filtered.length - 1, Math.max(0, current + delta))
     selectAndReveal(filtered[next].id)
   }
 
@@ -93,7 +100,7 @@ export function OperationBrowser() {
       <ul
         role="listbox"
         aria-label="Operations"
-        aria-activedescendant={`op-${active}`}
+        aria-activedescendant={activeInFiltered ? `op-${active}` : undefined}
         tabIndex={0}
         onKeyDown={handleListKeyDown}
         className="max-h-[40vh] min-h-0 flex-1 overflow-y-auto pb-5 pt-1 lg:max-h-none"

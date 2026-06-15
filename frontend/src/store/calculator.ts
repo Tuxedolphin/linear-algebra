@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import { temporal } from 'zundo'
 
 import { compute } from '../lib/api'
-import { defaultOperation, operations } from '../data/operations'
+import { defaultOperation, operationById } from '../data/operations'
 import type { ComputeResponse, MatrixMod, OutputMode } from '../lib/types'
 
 type ThemeMode = 'system' | 'light' | 'dark'
@@ -78,7 +78,7 @@ const initialOperation = defaultOperation.id
 // Inputs to apply when an operation's sample is loaded. `setOperation` also sets
 // `operation`; `loadSample` reuses the current one. Both clear the prior result.
 function sampleInputs(operationId: string, fallbackMatrixA: string) {
-  const meta = operations.find((item) => item.id === operationId)
+  const meta = operationById.get(operationId)
   return {
     matrixA: meta?.sampleA ?? fallbackMatrixA,
     matrixB: meta?.sampleB ?? '',
@@ -142,9 +142,7 @@ export const useCalculatorStore = create<CalculatorState>()(
               id: makeId(),
               ts: Date.now(),
               operation: state.operation,
-              label:
-                operations.find((item) => item.id === state.operation)?.label ??
-                state.operation,
+              label: operationById.get(state.operation)?.label ?? state.operation,
               matrixA: state.matrixA,
               matrixB: state.matrixB,
               matrixC: state.matrixC,

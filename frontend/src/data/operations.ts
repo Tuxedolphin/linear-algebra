@@ -234,3 +234,5 @@ export const operations: OperationMeta[] = [
 ]
 
 export const defaultOperation = operations[0]
+
+export const operationById = new Map(operations.map((operation) => [operation.id, operation]))

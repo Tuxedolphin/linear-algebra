@@ -24,6 +24,17 @@ describe('App', () => {
     expect(selected).toHaveLength(1)
   })
 
+  it('removes the active descendant when search filters out the active operation', () => {
+    render(<App />)
+    const listbox = screen.getByRole('listbox', { name: 'Operations' })
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search operations' }), {
+      target: { value: 'eigen' },
+    })
+
+    expect(listbox).not.toHaveAttribute('aria-activedescendant')
+  })
+
   it('renders an editable matrix grid for Matrix A', () => {
     render(<App />)
     // The default operation seeds a 3x3 sample, so cell (1,1) must exist.

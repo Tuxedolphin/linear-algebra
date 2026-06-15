@@ -19,7 +19,7 @@ An interactive React web application for symbolic linear algebra computations, b
 
 - Python 3.10 or later
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) for Python dependencies
-- Node.js 20.19 or later and [pnpm](https://pnpm.io/) for the React frontend
+- Node.js ^20.19.0 or >=22.12.0 and [pnpm](https://pnpm.io/) for the React frontend
 
 Install `uv` if you do not have it:
 

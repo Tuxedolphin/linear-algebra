@@ -26,9 +26,10 @@ export function MatrixGrid({ label, value, onChange, singleColumn = false }: Mat
   // Re-sync from the store when the value changes externally (sample load,
   // chaining, undo/redo). Compare normalised forms to avoid whitespace loops.
   useEffect(() => {
-    setGrid((current) =>
-      serializeGrid(current) === serializeGrid(parseGrid(value)) ? current : parseGrid(value),
-    )
+    setGrid((current) => {
+      const next = parseGrid(value)
+      return serializeGrid(current) === serializeGrid(next) ? current : next
+    })
   }, [value])
 
   const { rows, cols } = dimensions(grid)
