@@ -26,7 +26,7 @@ def _parse_cell(text: str) -> sym.Expr:
         raise ValueError(f"Failed to parse cell '{text}': {exc}") from exc
 
 
-def _parse_bracket(text: str) -> Matrix:
+def _parse_bracket_format(text: str) -> Matrix:
     body = text.strip()[1:-1].strip()
     if not body:
         raise ValueError("Empty matrix")
@@ -36,15 +36,28 @@ def _parse_bracket(text: str) -> Matrix:
         row_text = row_text.strip()
         if not row_text:
             continue
-        tokens = row_text.split(",") if "," in row_text else row_text.split()
-        rows.append([_parse_cell(token.strip()) for token in tokens if token.strip()])
+        if "," in row_text:
+            tokens = [token.strip() for token in row_text.split(",") if token.strip()]
+            rows.append([_parse_cell(token) for token in tokens])
+            continue
+
+        tokens = [token.strip() for token in row_text.split() if token.strip()]
+        try:
+            rows.append([_parse_cell(token) for token in tokens])
+        except ValueError:
+            rows.append([_parse_cell(row_text)])
 
     if not rows:
         raise ValueError("Empty matrix")
 
     column_counts = {len(row) for row in rows}
     if len(column_counts) != 1:
-        raise ValueError("All rows must have the same number of columns.")
+        expected = len(rows[0])
+        actual = next(len(row) for row in rows if len(row) != expected)
+        raise ValueError(
+            f"Row length mismatch: expected {expected} cells, got {actual}. "
+            "Use commas to separate cells when expressions contain spaces."
+        )
 
     return Matrix(rows).applyfunc(lambda x: sym.nsimplify(x, rational=True))
 
@@ -91,9 +104,12 @@ def parse_input(text: str) -> Matrix:
                 return _parse_python_literal(s)
             except ValueError:
                 pass
-        return _parse_bracket(s)
+        return _parse_bracket_format(s)
 
     raise ValueError("Matrix must be wrapped in [ ].")
+
+
+parse_matrix = parse_input
 
 
 def to_latex(expr: sym.Expr | sym.MatrixBase) -> str:

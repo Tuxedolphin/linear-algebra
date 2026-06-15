@@ -88,10 +88,9 @@ These are the remaining tasks in rough priority order.
 
 ### 3. Retire the legacy GUI
 
-`backend/app/main.py` still mounts the old vanilla-JS static files and exposes the legacy `/api/compute`, `/api/parse`, `/api/equivalent` routes. Once the new frontend is live:
-
-- [ ] Remove the old static mount and legacy routes from `main.py`.
-- [ ] Delete `backend/app/static/` and `frontend/` legacy assets if any remain.
+- [x] Remove the old static mount and legacy `/api/process`, `/api/parse`, `/api/equivalent` routes from `main.py`.
+- [x] Delete `backend/app/static/`.
+- [x] Preserve parser compatibility in `backend/app/parse.py` so backend tests no longer import parser helpers from `app.main`.
 
 ### 4. Nice-to-have polish
 

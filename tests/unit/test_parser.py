@@ -1,4 +1,4 @@
-"""Unit tests for parse_matrix and _parse_bracket_format in gui/app.py.
+"""Unit tests for parse_matrix and _parse_bracket_format in app.parse.
 
 Covers:
   - Bracket format with whitespace-delimited integers
@@ -13,8 +13,7 @@ Covers:
 import pytest
 import sympy as sym
 
-# Import the helpers directly from the GUI module
-from app.main import parse_matrix, _parse_bracket_format
+from app.parse import parse_matrix, _parse_bracket_format
 
 
 # ---------------------------------------------------------------------------
