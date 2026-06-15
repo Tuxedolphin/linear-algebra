@@ -5,6 +5,13 @@
 
 export type Grid = string[][]
 
+/** Pad a row with empty cells so it has at least `cols` columns. */
+function padRow(row: string[], cols: number): string[] {
+  const padded = [...row]
+  while (padded.length < cols) padded.push('')
+  return padded
+}
+
 /** Parse a bracket-format matrix string into a rectangular grid of cell strings. */
 export function parseGrid(value: string): Grid {
   const body = value.trim().replace(/^\[+/, '').replace(/\]+$/, '').trim()
@@ -23,11 +30,7 @@ export function parseGrid(value: string): Grid {
 
   // Normalise to a rectangle so the editor never renders ragged rows.
   const cols = Math.max(1, ...grid.map((row) => row.length))
-  return grid.map((row) => {
-    const padded = [...row]
-    while (padded.length < cols) padded.push('')
-    return padded
-  })
+  return grid.map((row) => padRow(row, cols))
 }
 
 /** Serialise a grid back to bracket format. Empty cells default to 0. */
@@ -63,11 +66,7 @@ export function parsePastedGrid(text: string): Grid | null {
   if (rows.length === 0 || rows.some((row) => row.length === 0)) return null
   const cols = Math.max(...rows.map((row) => row.length))
   if (rows.length === 1 && cols === 1) return null // single token: ordinary edit
-  return rows.map((row) => {
-    const padded = [...row]
-    while (padded.length < cols) padded.push('')
-    return padded
-  })
+  return rows.map((row) => padRow(row, cols))
 }
 
 export function dimensions(grid: Grid): { rows: number; cols: number } {

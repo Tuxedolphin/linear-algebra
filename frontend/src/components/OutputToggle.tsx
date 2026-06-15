@@ -20,7 +20,7 @@ export function OutputToggle() {
           aria-pressed={output === mode.value}
           title={`${mode.hint} values`}
           className={`min-w-[44px] border-r border-softRule px-2.5 py-1 font-mono text-[11px] font-medium last:border-r-0 ${
-            output === mode.value ? 'bg-accentBg text-accent' : 'text-graphite hover:text-ink'
+            output === mode.value ? 'bg-accentBg text-ink' : 'text-graphite hover:text-ink'
           }`}
         >
           {mode.label}

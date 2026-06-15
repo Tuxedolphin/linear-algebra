@@ -78,7 +78,7 @@ export function OperationBrowser() {
   }
 
   return (
-    <aside className="flex h-full min-h-0 w-[220px] shrink-0 flex-col border-r border-rule bg-panel">
+    <aside className="flex w-full flex-col border-b border-rule bg-panel lg:h-full lg:min-h-0 lg:w-[220px] lg:shrink-0 lg:border-b-0 lg:border-r">
       <div className="border-b border-softRule p-2.5">
         <input
           ref={searchRef}
@@ -96,7 +96,7 @@ export function OperationBrowser() {
         aria-activedescendant={`op-${active}`}
         tabIndex={0}
         onKeyDown={handleListKeyDown}
-        className="min-h-0 flex-1 overflow-y-auto pb-5 pt-1"
+        className="max-h-[40vh] min-h-0 flex-1 overflow-y-auto pb-5 pt-1 lg:max-h-none"
       >
         {grouped.length === 0 ? (
           <li className="px-4 py-6 text-center text-[12px] text-faint">No matches</li>
@@ -119,9 +119,9 @@ export function OperationBrowser() {
                     role="option"
                     aria-selected={isActive}
                     onClick={() => setOperation(operation.id)}
-                    className={`relative flex h-[30px] cursor-pointer items-center px-4 text-[12.5px] transition-colors ${
+                    className={`relative flex min-h-[34px] cursor-pointer items-center px-4 text-[12.5px] transition-colors active:bg-surface2 lg:min-h-[30px] ${
                       isActive
-                        ? 'bg-accentBg font-medium text-accent'
+                        ? 'bg-accentBg font-medium text-ink'
                         : 'text-graphite hover:bg-surface2 hover:text-ink'
                     }`}
                   >

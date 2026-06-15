@@ -32,7 +32,7 @@ export function InputPane({ operation }: { operation: OperationMeta }) {
   const loadSample = useCalculatorStore((state) => state.loadSample)
 
   return (
-    <section className="flex h-full min-h-0 flex-col border-r border-rule bg-bg">
+    <section className="flex flex-col border-b border-rule bg-bg lg:h-full lg:min-h-0 lg:border-b-0 lg:border-r">
       <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6">
         <header>
           <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-graphite">
@@ -90,6 +90,7 @@ export function InputPane({ operation }: { operation: OperationMeta }) {
                   <select
                     value={mods[key]}
                     onChange={(event) => setMod(key, event.target.value as MatrixMod)}
+                    aria-label={`Matrix ${matrix} modifier`}
                     className="mt-1 h-8 w-full rounded border border-rule bg-surface px-2 text-[12px] text-ink"
                   >
                     {modOptions.map((option) => (

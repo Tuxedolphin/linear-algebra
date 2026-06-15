@@ -45,7 +45,7 @@ export function EquivalentDialog() {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/45" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[82vh] w-[min(760px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-rule bg-panel shadow-panel">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[82dvh] w-[min(760px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-rule bg-panel shadow-panel">
           <div className="flex items-start justify-between gap-4 border-b border-rule px-5 py-4">
             <div>
               <Dialog.Title className="text-lg font-semibold text-ink">
@@ -62,7 +62,7 @@ export function EquivalentDialog() {
               ×
             </Dialog.Close>
           </div>
-          <div className="max-h-[66vh] overflow-y-auto px-5 py-4">
+          <div className="max-h-[66dvh] overflow-y-auto px-5 py-4">
             {isLoading ? (
               <div className="rounded border border-rule bg-surface p-4 text-sm text-graphite">
                 Loading statements.
@@ -75,7 +75,7 @@ export function EquivalentDialog() {
             ) : null}
             {data ? (
               <>
-                <div className="mb-4 grid grid-cols-4 gap-2">
+                <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {Object.entries(data.properties).map(([key, value]) => (
                     <div key={key} className="rounded border border-rule bg-surface p-3">
                       <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-graphite">

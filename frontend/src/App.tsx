@@ -36,7 +36,7 @@ function App() {
   }, [theme])
 
   return (
-    <main className="flex h-[100dvh] min-w-[1100px] flex-col overflow-hidden bg-bg text-ink">
+    <main className="flex min-h-[100dvh] flex-col bg-bg text-ink lg:h-[100dvh] lg:overflow-hidden">
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-rule bg-panel px-4">
         <div className="flex items-center gap-2.5">
           <div className="flex h-[26px] w-[26px] items-center justify-center rounded-md bg-accent font-mono text-[13px] font-semibold text-white">
@@ -66,10 +66,10 @@ function App() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[220px_minmax(390px,440px)_minmax(0,1fr)]">
+      <div className="grid flex-1 grid-cols-1 lg:min-h-0 lg:grid-cols-[220px_minmax(390px,440px)_minmax(0,1fr)]">
         <OperationBrowser />
         <InputPane operation={operation} />
-        <div className="min-h-0 overflow-y-auto bg-bg px-6 py-6">
+        <div className="bg-bg px-4 py-6 sm:px-6 lg:min-h-0 lg:overflow-y-auto">
           <div className="mx-auto max-w-[920px] space-y-8">
             <ResultsPanel />
             <StepsPanel />

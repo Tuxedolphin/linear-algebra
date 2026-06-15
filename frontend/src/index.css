@@ -43,12 +43,12 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-bg);
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 button,

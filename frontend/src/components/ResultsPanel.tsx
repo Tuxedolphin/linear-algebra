@@ -6,7 +6,7 @@ import type { MatrixBlock, ResultBlock, VectorListBlock } from '../lib/types'
 import { useCalculatorStore } from '../store/calculator'
 
 function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
   return (
     <button
       type="button"
@@ -14,14 +14,17 @@ function CopyButton({ text }: { text: string }) {
         navigator.clipboard
           ?.writeText(text)
           .then(() => {
-            setCopied(true)
-            window.setTimeout(() => setCopied(false), 1500)
+            setState('copied')
+            window.setTimeout(() => setState('idle'), 1500)
           })
-          .catch(() => {})
+          .catch(() => {
+            setState('failed')
+            window.setTimeout(() => setState('idle'), 1500)
+          })
       }}
       className="rounded border border-rule bg-surface px-2 py-1 font-mono text-[11px] text-graphite hover:border-accentRing hover:text-accent"
     >
-      {copied ? 'Copied' : 'Copy'}
+      {state === 'copied' ? 'Copied' : state === 'failed' ? 'Failed' : 'Copy'}
     </button>
   )
 }
@@ -94,9 +97,27 @@ function ResultCard({ block }: { block: ResultBlock }) {
   )
 }
 
+function ResultSkeleton() {
+  return (
+    <div className="grid gap-4" aria-busy="true" aria-live="polite">
+      <span className="sr-only">Computing…</span>
+      {[0, 1].map((index) => (
+        <div
+          key={index}
+          className="rounded-lg border border-rule bg-surface p-4 shadow-panel"
+        >
+          <div className="mb-3 h-3 w-24 animate-pulse rounded bg-surface2" />
+          <div className="h-24 animate-pulse rounded-md bg-surface2" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function ResultsPanel() {
   const result = useCalculatorStore((state) => state.result)
   const error = useCalculatorStore((state) => state.error)
+  const isComputing = useCalculatorStore((state) => state.isComputing)
 
   return (
     <section>
@@ -110,6 +131,8 @@ export function ResultsPanel() {
         <div className="rounded-lg border border-danger/35 bg-dangerBg px-4 py-3 text-sm leading-6 text-danger">
           {error}
         </div>
+      ) : isComputing ? (
+        <ResultSkeleton />
       ) : result ? (
         <div className="grid gap-4">
           {result.blocks.map((block, index) => (

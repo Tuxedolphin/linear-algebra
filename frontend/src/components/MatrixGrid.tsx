@@ -143,7 +143,7 @@ export function MatrixGrid({ label, value, onChange, singleColumn = false }: Mat
           role="group"
           aria-label={`${label} cells`}
           className="grid gap-1 py-1"
-          style={{ gridTemplateColumns: `repeat(${cols}, 44px)` }}
+          style={{ gridTemplateColumns: `repeat(${cols}, 52px)` }}
         >
           {grid.map((row, r) =>
             row.map((cell, c) => (
@@ -160,7 +160,7 @@ export function MatrixGrid({ label, value, onChange, singleColumn = false }: Mat
                 onFocus={(event) => event.target.select()}
                 onKeyDown={(event) => handleKeyDown(event, r, c)}
                 onPaste={handlePaste}
-                className="h-8 w-11 rounded-[5px] border border-rule bg-surface text-center font-mono text-[13px] text-ink transition-colors hover:border-accentRing focus:border-accent"
+                className="h-8 w-full rounded-[5px] border border-rule bg-surface text-center font-mono text-[13px] text-ink transition-colors hover:border-accentRing focus:border-accent"
               />
             )),
           )}
@@ -195,7 +195,7 @@ function Stepper({
           onClick={onDecrement}
           disabled={min}
           aria-label={`Remove ${label.replace(/s$/, '')}`}
-          className="h-6 w-6 text-ink hover:bg-surface2 disabled:opacity-30"
+          className="h-6 w-6 text-ink transition-transform hover:bg-surface2 active:translate-y-px disabled:opacity-30 disabled:active:translate-y-0"
         >
           −
         </button>
@@ -205,7 +205,7 @@ function Stepper({
           onClick={onIncrement}
           disabled={max}
           aria-label={`Add ${label.replace(/s$/, '')}`}
-          className="h-6 w-6 text-ink hover:bg-surface2 disabled:opacity-30"
+          className="h-6 w-6 text-ink transition-transform hover:bg-surface2 active:translate-y-px disabled:opacity-30 disabled:active:translate-y-0"
         >
           +
         </button>

@@ -75,6 +75,20 @@ export type CalculatorState = {
 
 const initialOperation = defaultOperation.id
 
+// Inputs to apply when an operation's sample is loaded. `setOperation` also sets
+// `operation`; `loadSample` reuses the current one. Both clear the prior result.
+function sampleInputs(operationId: string, fallbackMatrixA: string) {
+  const meta = operations.find((item) => item.id === operationId)
+  return {
+    matrixA: meta?.sampleA ?? fallbackMatrixA,
+    matrixB: meta?.sampleB ?? '',
+    matrixC: meta?.sampleC ?? '',
+    rhs: meta?.sampleRhs ?? '',
+    result: null,
+    error: null,
+  }
+}
+
 export const useCalculatorStore = create<CalculatorState>()(
   temporal(
     persist(
@@ -92,18 +106,8 @@ export const useCalculatorStore = create<CalculatorState>()(
         error: null,
         isComputing: false,
         history: [],
-        setOperation: (operation) => {
-          const meta = operations.find((item) => item.id === operation)
-          set({
-            operation,
-            matrixA: meta?.sampleA ?? get().matrixA,
-            matrixB: meta?.sampleB ?? '',
-            matrixC: meta?.sampleC ?? '',
-            rhs: meta?.sampleRhs ?? '',
-            result: null,
-            error: null,
-          })
-        },
+        setOperation: (operation) =>
+          set({ operation, ...sampleInputs(operation, get().matrixA) }),
         setMatrix: (key, value) => set({ [key]: value, error: null }),
         setK: (k) => set({ k, error: null }),
         setMod: (key, value) =>
@@ -163,17 +167,7 @@ export const useCalculatorStore = create<CalculatorState>()(
             set({ isComputing: false })
           }
         },
-        loadSample: () => {
-          const meta = operations.find((item) => item.id === get().operation)
-          set({
-            matrixA: meta?.sampleA ?? get().matrixA,
-            matrixB: meta?.sampleB ?? '',
-            matrixC: meta?.sampleC ?? '',
-            rhs: meta?.sampleRhs ?? '',
-            result: null,
-            error: null,
-          })
-        },
+        loadSample: () => set(sampleInputs(get().operation, get().matrixA)),
         // Chaining loads the result into Matrix A without changing the
         // selected operation or discarding the result already on screen.
         useBlockAsMatrixA: (raw) => set({ matrixA: raw, error: null }),

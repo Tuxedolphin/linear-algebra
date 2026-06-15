@@ -36,7 +36,7 @@ export function HistoryDrawer() {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40" />
-        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-[360px] flex-col border-l border-rule bg-panel shadow-panel animate-[slideInRight_180ms_cubic-bezier(0.16,1,0.3,1)]">
+        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-full max-w-[360px] flex-col border-l border-rule bg-panel shadow-panel animate-[slideInRight_180ms_cubic-bezier(0.16,1,0.3,1)]">
           <div className="flex items-center justify-between gap-3 border-b border-rule px-5 py-4">
             <Dialog.Title className="text-[15px] font-semibold text-ink">History</Dialog.Title>
             <div className="flex items-center gap-2">
