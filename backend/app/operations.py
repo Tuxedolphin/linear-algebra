@@ -181,7 +181,7 @@ def _svd(request: ComputeRequest) -> ComputeResponse:
         [
             _matrix_block("U", _maybe_decimal_matrix(result.U, request.output)),
             _matrix_block("Sigma", _maybe_decimal_matrix(result.S, request.output)),
-            _matrix_block("V^T", _maybe_decimal_matrix(result.V, request.output)),
+            _matrix_block("V^T", _maybe_decimal_matrix(result.V.T, request.output)),
         ],
         parse_steps(raw_steps),
     )

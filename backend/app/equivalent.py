@@ -16,8 +16,7 @@ def build_equivalent_statements(mat: Matrix) -> dict:
     category = ""
 
     if rows == cols:
-        det = mat.det()
-        is_invertible = det != 0
+        is_invertible = rank == rows
 
         if is_invertible:
             category = f"Square Matrix ({rows}x{rows}) - Invertible (Non-Singular)"

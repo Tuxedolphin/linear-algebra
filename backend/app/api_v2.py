@@ -55,7 +55,7 @@ async def compute(request: ComputeRequest):
     except ValueError as exc:
         return _error_response("parse", str(exc))
     except Exception as exc:
-        return _error_response("compute", str(exc))
+        return _error_response("compute", str(exc), status_code=500)
 
 
 @router.post("/parse")

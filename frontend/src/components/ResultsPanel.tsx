@@ -11,16 +11,18 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={() => {
+        const fail = () => {
+          setState('failed')
+          window.setTimeout(() => setState('idle'), 1500)
+        }
+        if (!navigator.clipboard) { fail(); return }
         navigator.clipboard
-          ?.writeText(text)
+          .writeText(text)
           .then(() => {
             setState('copied')
             window.setTimeout(() => setState('idle'), 1500)
           })
-          .catch(() => {
-            setState('failed')
-            window.setTimeout(() => setState('idle'), 1500)
-          })
+          .catch(fail)
       }}
       className="rounded border border-rule bg-surface px-2 py-1 font-mono text-[11px] text-graphite hover:border-accentRing hover:text-accent"
     >
