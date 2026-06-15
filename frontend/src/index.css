@@ -12,7 +12,7 @@
   --color-surface-2: #ede8de;
   --color-ink: #1e1a14;
   --color-muted: #6a5d4d;
-  --color-faint: #9a8e7c;
+  --color-faint: #6f6658;
   --color-border: rgba(30, 26, 20, 0.08);
   --color-border-2: rgba(30, 26, 20, 0.14);
   --color-accent: #96501c;
@@ -93,13 +93,13 @@ select:focus-visible,
   --color-surface-2: #222220;
   --color-ink: #e8e8e5;
   --color-muted: #9a9a94;
-  --color-faint: #6a6a64;
+  --color-faint: #8f8f88;
   --color-border: rgba(255, 255, 255, 0.06);
   --color-border-2: rgba(255, 255, 255, 0.1);
   --color-accent: #c07b3e;
   --color-accent-bg: rgba(192, 123, 62, 0.08);
   --color-accent-ring: rgba(192, 123, 62, 0.22);
-  --color-ok: #3a8f58;
+  --color-ok: #4faf70;
   --color-ok-bg: rgba(58, 143, 88, 0.1);
   --color-danger: #e07a6e;
   --color-danger-bg: rgba(224, 122, 110, 0.1);
@@ -112,6 +112,33 @@ select:focus-visible,
   }
   to {
     transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 

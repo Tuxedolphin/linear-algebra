@@ -15,28 +15,46 @@ function relativeTime(ts: number): string {
 
 export function HistoryDrawer() {
   const [open, setOpen] = useState(false)
+  const [hasOpened, setHasOpened] = useState(false)
   const history = useCalculatorStore((state) => state.history)
   const restore = useCalculatorStore((state) => state.restoreFromHistory)
   const clearHistory = useCalculatorStore((state) => state.clearHistory)
 
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) setHasOpened(true)
+    setOpen(nextOpen)
+  }
+
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange} modal={open}>
       <Dialog.Trigger asChild>
         <button
           type="button"
+          aria-label="History"
           className="flex h-[30px] items-center gap-1.5 rounded-md border border-rule bg-surface px-3 text-[13px] font-medium text-graphite hover:bg-surface2 hover:text-ink"
         >
           History
           {history.length ? (
-            <span className="rounded-full bg-accentBg px-1.5 font-mono text-[10px] font-semibold text-accent">
+            <span
+              aria-hidden="true"
+              className="rounded-full bg-accentBg px-1.5 font-mono text-[10px] font-semibold text-accent"
+            >
               {history.length}
             </span>
           ) : null}
         </button>
       </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40" />
-        <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-full max-w-[360px] flex-col border-l border-rule bg-panel shadow-panel animate-[slideInRight_180ms_cubic-bezier(0.16,1,0.3,1)]">
+      {hasOpened ? (
+        <Dialog.Portal forceMount>
+          <Dialog.Overlay
+            forceMount
+            className="fixed inset-0 z-40 bg-ink/40 [animation-fill-mode:both] data-[state=closed]:pointer-events-none data-[state=closed]:animate-[fadeOut_160ms_ease-in] data-[state=open]:animate-[fadeIn_180ms_ease-out]"
+          />
+          <Dialog.Content
+            forceMount
+            aria-hidden={open ? undefined : true}
+            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-[360px] flex-col border-l border-rule bg-panel shadow-panel [animation-fill-mode:both] data-[state=closed]:pointer-events-none data-[state=closed]:animate-[slideOutRight_160ms_cubic-bezier(0.7,0,0.84,0)] data-[state=open]:animate-[slideInRight_180ms_cubic-bezier(0.16,1,0.3,1)]"
+          >
           <div className="flex items-center justify-between gap-3 border-b border-rule px-5 py-4">
             <Dialog.Title className="text-[15px] font-semibold text-ink">History</Dialog.Title>
             <div className="flex items-center gap-2">
@@ -101,8 +119,9 @@ export function HistoryDrawer() {
               </ul>
             )}
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
+          </Dialog.Content>
+        </Dialog.Portal>
+      ) : null}
     </Dialog.Root>
   )
 }
