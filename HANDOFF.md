@@ -1,8 +1,8 @@
 # Handoff — linear-algebra calculator
 
-**Branch:** `feat/react-redesign` → PR #3 (open, ready for review)
-**Last commit:** `c28564d` — Copilot review fixes
-**Tests:** 832 passed (backend); tsc/eslint/vitest clean (frontend)
+**Branch:** `feat/react-redesign`
+**Current PR:** #4 — ready for review
+**Latest verification:** backend tests passed (823); frontend lint, tests, build, and dependency audit passed
 
 ---
 
@@ -94,7 +94,6 @@ These are the remaining tasks in rough priority order.
 
 ### 4. Nice-to-have polish
 
-- [ ] **History drawer exit animation** — Radix `Dialog.Content` uses `data-[state=closed]` for exit; needs `forceMount` + a CSS or Framer Motion exit transition. Currently the drawer just disappears.
 - [ ] **Worked steps for remaining step-less operations** — `least_squares`, `projection`, `intersect`, `transition`, `nullspace`, `orth_complement`, `col_constraints`, `extend_basis`, `gram_schmidt` return steps from the library but the coverage is shallow. Investigate whether deeper verbosity levels expose more working.
 - [ ] **Mobile keyboard handling** — the matrix grid cells are `<input type="text">`; on iOS the virtual keyboard pushes the layout and the fixed-height column layout can break. May need `visualViewport` handling or a layout adjustment.
 
@@ -104,12 +103,12 @@ These are the remaining tasks in rough priority order.
 
 ```bash
 # Backend
-uv run uvicorn backend.app.main:app --reload --port 8000
+uv run uvicorn app.main:app --app-dir backend --reload --port 8000
 
 # Frontend (separate terminal)
 cd frontend && pnpm dev
 
 # Tests
-PYTHONPATH=backend uv run pytest tests/
+uv run pytest tests/
 cd frontend && pnpm test
 ```
